@@ -5,7 +5,7 @@
 <template>
   <header class="app-header">
     <!-- <p class="app-header__eyebrow">Pencatatan Tamu</p> -->
-    <h1 class="app-header__title">e-Guestbook</h1>
+    <h1 class="app-header__title">e-Guestbook.</h1>
     <!-- <p class="app-header__subtitle"> -->
     <!--   Capture bagian KTP dan ubah NIK, Nama, serta Alamat menjadi teks JSON. -->
     <!-- </p> -->
