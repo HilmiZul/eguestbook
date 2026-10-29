@@ -85,3 +85,7 @@ dibutuhkan pada proses OCR pertama.
 - OCR tidak memverifikasi keaslian KTP.
 - Hasil dapat diedit manual untuk mengoreksi salah baca.
 - Gambar dan data tidak disimpan atau dikirim ke mana pun.
+
+## Kontribusi
+
+Lihat `KONTRIBUSI.md`
