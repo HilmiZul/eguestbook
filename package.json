@@ -1,0 +1,22 @@
+{
+  "name": "buku-tamu-ocr",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Aplikasi capture KTP dan ekstraksi NIK, Nama, serta Alamat menjadi JSON.",
+  "scripts": {
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build",
+    "preview": "bunx --bun vite preview",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@fontsource/open-sans": "^5.3.0",
+    "tesseract.js": "^7.0.0",
+    "vue": "^3.5.44"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.10",
+    "vite": "^8.3.5"
+  }
+}

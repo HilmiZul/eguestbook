@@ -1,0 +1,31 @@
+# Dependensi
+node_modules/
+
+# Hasil build
+dist/
+dist-ssr/
+*.local
+
+# File lingkungan dan rahasia
+.env
+.env.*
+!.env.example
+*.pem
+
+# Cache dan log
+.vite/
+coverage/
+*.log
+*.traineddata
+*.traineddata.gz
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-error.log*
+
+# Berkas sistem dan editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
