@@ -47,7 +47,7 @@ function handleCapture() {
   <section class="panel camera-panel" aria-labelledby="camera-panel-title">
     <header class="panel__header">
       <div>
-        <h2 id="camera-panel-title" class="panel__title">Kamera KTP</h2>
+        <h2 id="camera-panel-title" class="panel__title">Pindai KTP</h2>
         <p class="panel__subtitle">Posisikan kartu di dalam bingkai</p>
       </div>
       <span class="status-pill" :class="{ 'status-pill--active': isActive || isScanning }">
@@ -69,7 +69,7 @@ function handleCapture() {
       <div v-if="!isActive" class="camera-stage__empty">
         <p class="camera-stage__empty-title">Kamera belum aktif</p>
         <p class="camera-stage__empty-text">
-          Tekan Mulai Kamera, lalu arahkan KTP ke kamera dengan posisi mendatar.
+          Tekan Buka Kamera, lalu arahkan KTP ke kamera dengan posisi mendatar.
         </p>
       </div>
 
@@ -102,7 +102,7 @@ function handleCapture() {
         :disabled="isStarting || !isSupported"
         @click="start"
       >
-        {{ isStarting ? 'Menyiapkan Kamera...' : 'Mulai Kamera' }}
+        {{ isStarting ? 'Menyiapkan Kamera...' : 'Buka Kamera' }}
       </button>
 
       <!-- Setelah aktif: capture sebagai aksi utama, stop sebagai aksi sekunder -->

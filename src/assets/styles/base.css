@@ -56,7 +56,7 @@ button {
   border: 1px solid var(--color-line);
   border-radius: var(--radius-xl);
   background: var(--color-surface);
-  box-shadow: var(--shadow-panel);
+  box-shadow: none !important;
   corner-shape: squircle;
 }
 
@@ -121,9 +121,9 @@ button {
   min-height: 3rem;
   padding: 0 1.25rem;
   border: 1px solid var(--color-ink);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xl);
   background: var(--color-ink);
-  box-shadow: var(--shadow-button);
+  box-shadow: none !important; 
   color: var(--color-page);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -156,8 +156,9 @@ button {
 .button--small {
   min-height: 2.375rem;
   padding: 0 0.875rem;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 8px 20px -12px rgb(0 0 0 / 55%);
+  border-radius: var(--radius-xl);
+  /* box-shadow: 0 8px 20px -12px rgb(0 0 0 / 55%); */
+  box-shadow: none !important;
   font-size: 0.6875rem;
 }
 

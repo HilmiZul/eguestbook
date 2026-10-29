@@ -88,8 +88,8 @@ onBeforeUnmount(() => {
   <section class="panel result-panel" aria-labelledby="result-panel-title">
     <header class="panel__header">
       <div>
-        <h2 id="result-panel-title" class="panel__title">Hasil Pembacaan</h2>
-        <p class="panel__subtitle">Format JSON &middot; NIK, Nama, Alamat</p>
+        <h2 id="result-panel-title" class="panel__title">Hasil</h2>
+        <!-- <p class="panel__subtitle">Format JSON &middot; NIK, Nama, Alamat</p> -->
       </div>
 
       <span class="status-pill" :class="{ 'status-pill--active': isScanning || foundCount === 3 }">
