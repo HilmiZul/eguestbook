@@ -121,6 +121,7 @@ onBeforeUnmount(() => {
         autocapitalize="off"
         autocomplete="off"
         aria-describedby="result-help"
+        :disabled="!textValue"
       ></textarea>
 
       <!-- Tombol copy mengambang di dalam textarea -->
@@ -138,11 +139,11 @@ onBeforeUnmount(() => {
     <p v-if="error" class="feedback feedback--error" role="alert">{{ error }}</p>
     <p v-else-if="notice" class="feedback" role="status">{{ notice }}</p>
     <p v-else-if="isScanning" class="panel__hint">Sedang membaca KTP...</p>
-    <p v-else class="panel__hint">Hasil akan muncul di sini setelah capture.</p>
+    <!-- <p v-else class="panel__hint">Hasil akan muncul di sini setelah capture.</p> -->
 
     <p v-if="copyError" class="feedback feedback--error" role="alert">{{ copyError }}</p>
     <p id="result-help" class="panel__hint">
-      Teks dapat diedit sebelum disalin. Pastikan kembali data sudah sesuai.
+      *Editable
     </p>
   </section>
 </template>
