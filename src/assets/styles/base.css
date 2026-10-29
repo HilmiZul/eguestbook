@@ -53,7 +53,7 @@ button {
   flex-direction: column;
   min-width: 0;
   padding: 1.375rem;
-  border: 1px solid var(--color-line);
+  border: 2px solid #000;
   border-radius: var(--radius-xl);
   background: var(--color-surface);
   box-shadow: none !important;
@@ -138,7 +138,7 @@ button {
 }
 
 .button:hover:not(:disabled) {
-  background: #242424;
+  /* background: #242424; */
   transform: translateY(-1px);
 }
 
