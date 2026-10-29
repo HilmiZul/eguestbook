@@ -54,3 +54,8 @@ App ini dibuat untuk capture bagian KTP: NIK, Nama, Alamat yang dapat mengubah d
 - Jangan install Database
 - Jangan lakukan git push tanpa konfirmasi
 - Jangan lakukan commit file dan folder secret/penting atau yang tidak perlu
+
+## Rules/Aturan
+
+- Setiap perubahan commit tulis pada CHANGELOG.md dengan format nomor versi - tanggal dan daftar perubahan/commit dibawahnya
+- CHANGELOG.md harus dalam bahasa indonesia
