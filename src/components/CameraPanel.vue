@@ -68,9 +68,9 @@ function handleCapture() {
       <!-- Tampilan awal sebelum kamera dinyalakan -->
       <div v-if="!isActive" class="camera-stage__empty">
         <p class="camera-stage__empty-title">Kamera belum aktif</p>
-        <p class="camera-stage__empty-text">
-          Tekan Buka Kamera, lalu arahkan KTP ke kamera dengan posisi mendatar.
-        </p>
+        <!-- <p class="camera-stage__empty-text"> -->
+        <!--   Tekan Buka Kamera, lalu arahkan KTP ke kamera dengan posisi mendatar. -->
+        <!-- </p> -->
       </div>
 
       <!-- Panduan bingkai kartu; hanya tampil saat kamera aktif -->
@@ -113,7 +113,7 @@ function handleCapture() {
           :disabled="!isReady || isScanning"
           @click="handleCapture"
         >
-          {{ isScanning ? 'Membaca KTP...' : 'Capture' }}
+          {{ isScanning ? 'Membaca KTP...' : 'Pindai KTP' }}
         </button>
         <button
           type="button"
@@ -130,9 +130,9 @@ function handleCapture() {
     <p v-else-if="!isSupported" class="feedback feedback--error" role="alert">
       Browser ini tidak mendukung akses kamera.
     </p>
-    <p v-else class="panel__hint">
-      Gunakan pencahayaan yang cukup dan hindari pantulan pada permukaan KTP.
-    </p>
+    <!-- <p v-else class="panel__hint"> -->
+    <!--   Gunakan pencahayaan yang cukup dan hindari pantulan pada permukaan KTP. -->
+    <!-- </p> -->
   </section>
 </template>
 
