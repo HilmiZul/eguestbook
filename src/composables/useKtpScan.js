@@ -106,7 +106,7 @@ export function useKtpScan() {
     }
 
     if (foundCount > 0) {
-      return 'Sebagian field belum terbaca. Posisikan KTP lebih rata dan ulangi capture bila perlu.'
+      return 'Sebagian field belum terbaca. Posisikan KTP lebih rata dan ulangi capture bila perlu. Atau Edit manual.'
     }
 
     return 'Tidak ada field yang terbaca. Pastikan KTP berada di dalam bingkai dan cahaya cukup.'
