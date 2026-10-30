@@ -69,13 +69,13 @@ async function handleCapture(frame) {
       <div class="workspace__column workspace__column--right">
         <section class="panel panel--right-column" aria-label="Hasil foto dan hasil scan">
           <PhotoResultPanel
+            v-model:result="result"
             :photo="selfiePhoto"
-            :result="result"
             :keperluan="keperluan"
           />
 
           <ResultPanel
-            v-model:result="result"
+            :result="result"
             :is-scanning="isScanning"
             :notice="notice"
             :error="error"

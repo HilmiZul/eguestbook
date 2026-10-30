@@ -91,8 +91,16 @@ function selectOption(value) {
 }
 
 /* Versi ringkas saat digabung ke dalam panel hasil KTP */
+.keperluan-panel--embedded {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .keperluan-panel--embedded .keperluan-panel__header {
   align-items: center;
+  flex: none;
 }
 
 .keperluan-panel--embedded .panel__title {
@@ -102,6 +110,13 @@ function selectOption(value) {
 .keperluan-panel--embedded .keperluan-options {
   gap: 0.5rem;
   margin-top: 0.5rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-content: stretch;
+}
+
+.keperluan-panel--embedded .keperluan-option {
+  min-height: 0;
 }
 
 .keperluan-panel--embedded .keperluan-option {

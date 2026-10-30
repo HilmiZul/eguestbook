@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   // Data URL foto selfie yang diambil dari panel di atasnya.
@@ -9,15 +9,34 @@ const props = defineProps({
   keperluan: { type: String, default: '' },
 })
 
-// Ringkasan data tamu diambil langsung dari hasil pindai KTP.
-const dataFields = computed(() => [
-  { label: 'NIK', value: props.result?.NIK || 'Belum terbaca' },
-  { label: 'Nama', value: props.result?.Nama || 'Belum terbaca' },
-  { label: 'Alamat', value: props.result?.Alamat || 'Belum terbaca' },
-  { label: 'Keperluan', value: props.keperluan || 'Belum dipilih' },
-])
+const emit = defineEmits(['update:result'])
+
+const localResult = ref({ NIK: '', Nama: '', Alamat: '' })
+
+watch(
+  () => props.result,
+  (next) => {
+    const incoming = {
+      NIK: next?.NIK ?? '',
+      Nama: next?.Nama ?? '',
+      Alamat: next?.Alamat ?? '',
+    }
+    if (
+      incoming.NIK !== localResult.value.NIK ||
+      incoming.Nama !== localResult.value.Nama ||
+      incoming.Alamat !== localResult.value.Alamat
+    ) {
+      localResult.value = incoming
+    }
+  },
+  { immediate: true },
+)
 
 const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
+
+function emitUpdate() {
+  emit('update:result', { ...localResult.value })
+}
 </script>
 
 <template>
@@ -39,13 +58,49 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
       </div>
     </div>
 
-    <!-- Data di bawah foto diambil dari hasil pindai KTP -->
-    <dl class="photo-result-panel__data" aria-label="Data tamu dari hasil pindai KTP">
-      <div v-for="field in dataFields" :key="field.label" class="photo-result-panel__row">
-        <dt class="photo-result-panel__label">{{ field.label }}</dt>
-        <dd class="photo-result-panel__value">{{ field.value }}</dd>
-      </div>
-    </dl>
+    <!-- Data hasil scan yang dapat diedit langsung di bawah foto -->
+    <div class="photo-result-panel__fields">
+      <label class="photo-result-panel__field">
+        <span class="photo-result-panel__label">NIK</span>
+        <input
+          v-model="localResult.NIK"
+          class="photo-result-panel__input"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          spellcheck="false"
+          @input="emitUpdate"
+        />
+      </label>
+
+      <label class="photo-result-panel__field">
+        <span class="photo-result-panel__label">Nama</span>
+        <input
+          v-model="localResult.Nama"
+          class="photo-result-panel__input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          @input="emitUpdate"
+        />
+      </label>
+
+      <label class="photo-result-panel__field">
+        <span class="photo-result-panel__label">Alamat</span>
+        <input
+          v-model="localResult.Alamat"
+          class="photo-result-panel__input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          @input="emitUpdate"
+        />
+      </label>
+    </div>
+
+    <p v-if="keperluan" class="photo-result-panel__keperluan">
+      Keperluan: {{ keperluan }}
+    </p>
   </section>
 </template>
 
@@ -54,6 +109,8 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
   min-width: 0;
   min-height: 0;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Bingkai foto mengisi sisa tinggi panel */
@@ -90,31 +147,23 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
   font-weight: 600;
 }
 
-/* Daftar data tamu dengan garis pemisah tipis antar baris */
-.photo-result-panel__data {
+/* Field hasil scan yang dapat diedit */
+.photo-result-panel__fields {
   flex: none;
-  margin: 0.5rem 0 0;
-  padding: 0;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  corner-shape: squircle;
-  overflow: hidden;
-}
-
-.photo-result-panel__row {
-  display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  padding: 0.3125rem 0.5rem;
-  border-bottom: 1px solid var(--color-line);
+  margin-top: 0.625rem;
 }
 
-.photo-result-panel__row:last-child {
-  border-bottom: 0;
+.photo-result-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
 }
 
 .photo-result-panel__label {
-  margin: 0;
   color: var(--color-muted);
   font-size: 0.5625rem;
   font-weight: 600;
@@ -122,11 +171,36 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
   text-transform: uppercase;
 }
 
-.photo-result-panel__value {
-  min-width: 0;
-  margin: 0;
+.photo-result-panel__input {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  corner-shape: squircle;
+}
+
+.photo-result-panel__input:focus {
+  border-color: var(--color-ink);
+  background: var(--color-surface);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(10 10 10 / 6%);
+}
+
+.photo-result-panel__keperluan {
+  flex: none;
+  margin-top: 0.5rem;
+  color: var(--color-muted);
   font-size: 0.6875rem;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+@media (max-width: 30rem) {
+  .photo-result-panel__input {
+    font-size: 0.6875rem;
+  }
 }
 </style>
