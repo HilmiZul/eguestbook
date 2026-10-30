@@ -58,43 +58,45 @@ function emitUpdate() {
       </div>
     </div>
 
-    <!-- Data hasil scan yang dapat diedit langsung di bawah foto -->
+    <!-- Data hasil scan: NIK dan Nama di kiri (atas-bawah), Alamat di kanan (textarea) -->
     <div class="photo-result-panel__fields">
-      <label class="photo-result-panel__field">
-        <span class="photo-result-panel__label">NIK</span>
-        <input
-          v-model="localResult.NIK"
-          class="photo-result-panel__input"
-          type="text"
-          inputmode="numeric"
-          autocomplete="off"
-          spellcheck="false"
-          @input="emitUpdate"
-        />
-      </label>
+      <div class="photo-result-panel__fields-left">
+        <label class="photo-result-panel__field">
+          <span class="photo-result-panel__label">NIK</span>
+          <input
+            v-model="localResult.NIK"
+            class="photo-result-panel__input"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            spellcheck="false"
+            @input="emitUpdate"
+          />
+        </label>
 
-      <label class="photo-result-panel__field">
-        <span class="photo-result-panel__label">Nama</span>
-        <input
-          v-model="localResult.Nama"
-          class="photo-result-panel__input"
-          type="text"
-          autocomplete="off"
-          spellcheck="false"
-          @input="emitUpdate"
-        />
-      </label>
+        <label class="photo-result-panel__field">
+          <span class="photo-result-panel__label">Nama</span>
+          <input
+            v-model="localResult.Nama"
+            class="photo-result-panel__input"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            @input="emitUpdate"
+          />
+        </label>
+      </div>
 
-      <label class="photo-result-panel__field">
+      <label class="photo-result-panel__field photo-result-panel__field--alamat">
         <span class="photo-result-panel__label">Alamat</span>
-        <input
+        <textarea
           v-model="localResult.Alamat"
-          class="photo-result-panel__input"
-          type="text"
+          class="photo-result-panel__textarea"
+          rows="3"
           autocomplete="off"
           spellcheck="false"
           @input="emitUpdate"
-        />
+        ></textarea>
       </label>
     </div>
 
@@ -147,13 +149,21 @@ function emitUpdate() {
   font-weight: 600;
 }
 
-/* Field hasil scan yang dapat diedit */
+/* Field hasil scan: NIK dan Nama di kiri, Alamat (textarea) di kanan */
 .photo-result-panel__fields {
   flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+  align-items: start;
+}
+
+.photo-result-panel__fields-left {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: 0.625rem;
+  min-width: 0;
 }
 
 .photo-result-panel__field {
@@ -184,6 +194,27 @@ function emitUpdate() {
 }
 
 .photo-result-panel__input:focus {
+  border-color: var(--color-ink);
+  background: var(--color-surface);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(10 10 10 / 6%);
+}
+
+.photo-result-panel__textarea {
+  width: 100%;
+  min-height: 4.25rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  resize: vertical;
+  corner-shape: squircle;
+}
+
+.photo-result-panel__textarea:focus {
   border-color: var(--color-ink);
   background: var(--color-surface);
   outline: none;
