@@ -15,12 +15,12 @@ form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
 - Pratinjau kamera aktif hanya setelah tombol **Buka Kamera** ditekan.
 - Capture frame dan OCR memakai Tesseract.js dengan model bahasa Indonesia.
 - Ekstraksi NIK, Nama, dan Alamat dengan toleransi terhadap salah baca umum.
-- Form opsi **Keperluan** ringkas menyatu di bagian bawah panel Hasil KTP.
+- Form opsi **Keperluan** menyatu di bagian bawah panel Hasil.
 - Form **Foto Selfie** memakai kamera depan dan menyimpan hasil foto di browser.
 - Panel **Hasil Foto** menampilkan foto selfie beserta data NIK, Nama, Alamat,
   dan Keperluan dari hasil pindai KTP.
-- Hasil JSON dapat diedit dan disalin lewat tombol **Salin** di dalam textarea.
-- Pilihan keperluan otomatis disertakan pada hasil JSON.
+- Hasil scan (NIK, Nama, Alamat) dapat diedit langsung pada panel Hasil.
+- Pilihan keperluan disertakan pada data tamu.
 - Seluruh pemrosesan gambar berjalan lokal di browser.
 
 ## Teknologi

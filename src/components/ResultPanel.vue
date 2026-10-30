@@ -1,64 +1,42 @@
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { copyTextToClipboard } from '../utils/clipboard.js'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   result: { type: Object, required: true },
   isScanning: { type: Boolean, default: false },
   notice: { type: String, default: '' },
   error: { type: String, default: '' },
-  // Keperluan tamu yang dipilih pada form di bawah panel hasil.
-  keperluan: { type: String, default: '' },
 })
 
-// Nilai textarea disimpan lokal supaya pengguna bisa mengoreksi hasil OCR.
-const textValue = ref('')
-const copied = ref(false)
-const copyError = ref('')
-let copyTimer = null
+const emit = defineEmits(['update:result'])
 
-// Contoh struktur JSON yang muncul saat textarea masih kosong.
-const placeholderJson = `{
-  "NIK": "",
-  "Nama": "",
-  "Alamat": "",
-  "Keperluan": ""
-}`
+// Nilai lokal agar input dapat diedit tanpa menunggu parent.
+const localResult = ref({ NIK: '', Nama: '', Alamat: '' })
 
-/**
- * Menampilkan hasil OCR dan keperluan sebagai JSON yang rapi.
- * Hasil kosong sengaja ditampilkan sebagai textarea kosong, bukan objek kosong,
- * agar placeholder contoh tetap terlihat.
- */
+// Sinkronkan dari prop (misalnya setelah pemindaian) tanpa menimpa ketikan pengguna.
 watch(
-  () => [props.result, props.keperluan],
-  ([result, keperluan]) => {
-    const payload = {
-      NIK: result?.NIK ?? '',
-      Nama: result?.Nama ?? '',
-      Alamat: result?.Alamat ?? '',
-      Keperluan: keperluan ?? '',
+  () => props.result,
+  (next) => {
+    const incoming = {
+      NIK: next?.NIK ?? '',
+      Nama: next?.Nama ?? '',
+      Alamat: next?.Alamat ?? '',
     }
 
-    const hasAnyValue = Object.values(payload).some(
-      (fieldValue) => typeof fieldValue === 'string' && fieldValue.trim(),
-    )
-
-    textValue.value = hasAnyValue ? JSON.stringify(payload, null, 2) : ''
-    copied.value = false
-    copyError.value = ''
+    if (
+      incoming.NIK !== localResult.value.NIK ||
+      incoming.Nama !== localResult.value.Nama ||
+      incoming.Alamat !== localResult.value.Alamat
+    ) {
+      localResult.value = incoming
+    }
   },
-  { immediate: true, deep: true },
+  { immediate: true },
 )
 
-// Status tiap field membantu pengguna melihat bagian yang belum terbaca.
-const fields = computed(() => [
-  { label: 'NIK', found: Boolean(props.result?.NIK?.trim()) },
-  { label: 'Nama', found: Boolean(props.result?.Nama?.trim()) },
-  { label: 'Alamat', found: Boolean(props.result?.Alamat?.trim()) },
-])
-
-const foundCount = computed(() => fields.value.filter((field) => field.found).length)
+const foundCount = computed(() =>
+  ['NIK', 'Nama', 'Alamat'].filter((field) => localResult.value[field]?.trim()).length,
+)
 
 const statusLabel = computed(() => {
   if (props.isScanning) return 'Memindai'
@@ -67,31 +45,12 @@ const statusLabel = computed(() => {
   return `${foundCount.value}/3 field`
 })
 
-const copyLabel = computed(() => (copied.value ? 'Tersalin' : 'Salin'))
-
 /**
- * Menyalin isi textarea ke clipboard dan menampilkan konfirmasi singkat.
+ * Mengirim perubahan input ke parent agar state tetap sinkron.
  */
-async function handleCopy() {
-  if (!textValue.value) return
-
-  try {
-    await copyTextToClipboard(textValue.value)
-    copied.value = true
-    copyError.value = ''
-
-    window.clearTimeout(copyTimer)
-    copyTimer = window.setTimeout(() => {
-      copied.value = false
-    }, 1600)
-  } catch {
-    copyError.value = 'Tidak dapat menyalin otomatis. Pilih teks lalu tekan Ctrl+C atau Command+C.'
-  }
+function emitUpdate() {
+  emit('update:result', { ...localResult.value })
 }
-
-onBeforeUnmount(() => {
-  window.clearTimeout(copyTimer)
-})
 </script>
 
 <template>
@@ -104,49 +63,48 @@ onBeforeUnmount(() => {
       </span>
     </header>
 
-    <!-- Ringkasan field yang berhasil dibaca -->
-    <ul class="field-list" aria-label="Status field KTP">
-      <li
-        v-for="field in fields"
-        :key="field.label"
-        class="field-chip"
-        :class="{ 'field-chip--found': field.found }"
-        :aria-label="`${field.label}: ${field.found ? 'terbaca' : 'kosong'}`"
-      >
-        <span class="field-chip__label">{{ field.label }}</span>
-      </li>
-    </ul>
+    <!-- Field hasil scan yang dapat diedit manual -->
+    <div class="result-panel__fields">
+      <label class="result-panel__field">
+        <span class="result-panel__label">NIK</span>
+        <input
+          v-model="localResult.NIK"
+          class="result-panel__input"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          spellcheck="false"
+          @input="emitUpdate"
+        />
+      </label>
 
-    <div class="result-panel__editor">
-      <label class="visually-hidden" for="result-text">Hasil OCR KTP dalam format JSON</label>
-      <textarea
-        id="result-text"
-        v-model="textValue"
-        class="result-panel__textarea"
-        :placeholder="placeholderJson"
-        spellcheck="false"
-        autocapitalize="off"
-        autocomplete="off"
-        aria-describedby="result-help"
-        :disabled="!textValue"
-      ></textarea>
+      <label class="result-panel__field">
+        <span class="result-panel__label">Nama</span>
+        <input
+          v-model="localResult.Nama"
+          class="result-panel__input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          @input="emitUpdate"
+        />
+      </label>
 
-      <!-- Tombol copy mengambang di dalam textarea -->
-      <button
-        type="button"
-        class="button button--small result-panel__copy"
-        :disabled="!textValue || isScanning"
-        :aria-label="copied ? 'Teks berhasil disalin' : 'Salin teks JSON'"
-        @click="handleCopy"
-      >
-        {{ copyLabel }}
-      </button>
+      <label class="result-panel__field">
+        <span class="result-panel__label">Alamat</span>
+        <input
+          v-model="localResult.Alamat"
+          class="result-panel__input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          @input="emitUpdate"
+        />
+      </label>
     </div>
 
     <p v-if="error" class="feedback feedback--error" role="alert">{{ error }}</p>
     <p v-else-if="notice" class="feedback" role="status">{{ notice }}</p>
-
-    <p v-if="copyError" class="feedback feedback--error" role="alert">{{ copyError }}</p>
 
     <!-- Form keperluan digabung di bagian bawah panel hasil -->
     <div class="result-panel__keperluan">
@@ -157,8 +115,6 @@ onBeforeUnmount(() => {
     <div class="result-panel__submit">
       <button type="button" class="button">Kirim</button>
     </div>
-
-    <p id="result-help" class="visually-hidden">Hasil dapat diedit manual.</p>
   </section>
 </template>
 
@@ -169,83 +125,49 @@ onBeforeUnmount(() => {
   height: 100%;
 }
 
-/* Deretan chip status field */
-.field-list {
+/* Deretan input hasil scan yang dapat diedit */
+.result-panel__fields {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  margin: 0.625rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.field-chip {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-muted);
-  corner-shape: squircle;
-}
-
-.field-chip--found {
-  border-color: var(--color-ink);
-  color: var(--color-ink);
-}
-
-.field-chip__label {
-  font-size: 0.625rem;
-  font-weight: 600;
-}
-
-/* Wadah textarea dan tombol copy */
-.result-panel__editor {
-  position: relative;
-  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
   flex: 1 1 auto;
   min-height: 0;
-  margin-top: 0.5rem;
+  overflow: auto;
 }
 
-.result-panel__textarea {
+.result-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.result-panel__label {
+  color: var(--color-muted);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.result-panel__input {
   width: 100%;
-  min-height: 0;
-  padding: 0.625rem 0.625rem 2.75rem;
+  padding: 0.375rem 0.5rem;
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--color-surface-muted);
   color: var(--color-ink);
-  font-family: var(--font-sans);
   font-size: 0.75rem;
-  line-height: 1.5;
+  line-height: 1.4;
   corner-shape: squircle;
-  resize: none;
-  tab-size: 2;
-  transition:
-    border-color var(--duration-fast) var(--easing-standard),
-    background var(--duration-fast) var(--easing-standard),
-    box-shadow var(--duration-fast) var(--easing-standard);
 }
 
-.result-panel__textarea::placeholder {
-  color: #a1a1a1;
-}
-
-.result-panel__textarea:focus {
+.result-panel__input:focus {
   border-color: var(--color-ink);
   background: var(--color-surface);
-  box-shadow: 0 0 0 3px rgb(10 10 10 / 6%);
   outline: none;
-}
-
-/* Posisi tombol copy selalu terlihat di sudut kanan bawah textarea */
-.result-panel__copy {
-  position: absolute;
-  right: 0.5rem;
-  bottom: 0.5rem;
+  box-shadow: 0 0 0 3px rgb(10 10 10 / 6%);
 }
 
 /* Form keperluan menyatu di bagian bawah panel hasil */
@@ -265,7 +187,7 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 30rem) {
-  .result-panel__textarea {
+  .result-panel__input {
     font-size: 0.6875rem;
   }
 }

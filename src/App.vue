@@ -74,14 +74,11 @@ async function handleCapture(frame) {
             :keperluan="keperluan"
           />
 
-          <div class="panel--right-column__divider" aria-hidden="true"></div>
-
           <ResultPanel
-            :result="result"
+            v-model:result="result"
             :is-scanning="isScanning"
             :notice="notice"
             :error="error"
-            :keperluan="keperluan"
           >
             <template #keperluan>
               <KeperluanPanel v-model="keperluan" embedded />
@@ -166,13 +163,6 @@ async function handleCapture(frame) {
   border-radius: 0;
   box-shadow: none;
   background: transparent;
-}
-
-.panel--right-column__divider {
-  flex: none;
-  height: 1.5px;
-  margin: 0;
-  background: #000;
 }
 
 /* Di ponsel kolom ditumpuk; tablet dan desktop tetap satu layar tanpa scroll */
