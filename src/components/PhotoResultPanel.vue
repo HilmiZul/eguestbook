@@ -64,8 +64,8 @@ function emitUpdate() {
       {{ notice }}
     </p>
 
-    <!-- Data hasil scan muncul setelah foto diambil -->
-    <div v-if="photo" class="photo-result-panel__fields">
+    <!-- Data hasil scan (selalu tampil agar layout konsisten) -->
+    <div class="photo-result-panel__fields">
       <div class="photo-result-panel__fields-left">
         <label class="photo-result-panel__field">
           <span class="photo-result-panel__label">NIK</span>
