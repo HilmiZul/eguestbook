@@ -64,8 +64,8 @@ function emitUpdate() {
       {{ notice }}
     </p>
 
-    <!-- Data hasil scan: NIK dan Nama di kiri (atas-bawah), Alamat di kanan (textarea) -->
-    <div class="photo-result-panel__fields">
+    <!-- Data hasil scan muncul setelah foto diambil -->
+    <div v-if="photo" class="photo-result-panel__fields">
       <div class="photo-result-panel__fields-left">
         <label class="photo-result-panel__field">
           <span class="photo-result-panel__label">NIK</span>
@@ -121,27 +121,22 @@ function emitUpdate() {
   flex-direction: column;
 }
 
-/* Bingkai foto menyesuaikan ukuran asli pengambilan foto */
+/* Bingkai foto mengisi sisa tinggi panel */
 .photo-result-panel__preview {
   position: relative;
-  flex: 0 0 auto;
-  max-height: 65%;
+  flex: 1 1 auto;
+  min-height: 0;
   margin-top: 0.625rem;
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
   corner-shape: squircle;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .photo-result-panel__preview img {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 

@@ -164,16 +164,16 @@ async function handleCapture(frame) {
   background: transparent;
 }
 
-/* Bagian foto mendapat ruang lebih agar input NIK/Nama/Alamat tidak terpotong */
+/* Panel foto mengisi ruang tersedia; panel hasil mengikuti kontennya */
 .panel--right-column > .photo-result-panel {
-  flex: 2 1 0;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
-/* Bagian hasil (keperluan + Kirim) digeser ke bawah */
 .panel--right-column > .result-panel {
-  flex: 1 1 0;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
