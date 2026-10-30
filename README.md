@@ -1,15 +1,20 @@
 # Buku Tamu OCR
 
 Aplikasi web untuk menangkap bagian KTP dari kamera webcam, lalu mengubah
-NIK, Nama, dan Alamat menjadi teks JSON langsung di browser.
+NIK, Nama, dan Alamat menjadi teks JSON langsung di browser. Tersedia juga
+form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
 
 ## Fitur
 
-- Pratinjau kamera aktif hanya setelah tombol **Mulai Kamera** ditekan.
+- Layout dua kolom: pindai KTP di kiri, selfie di kanan.
+- Pratinjau kamera aktif hanya setelah tombol **Buka Kamera** ditekan.
 - Capture frame dan OCR memakai Tesseract.js dengan model bahasa Indonesia.
 - Ekstraksi NIK, Nama, dan Alamat dengan toleransi terhadap salah baca umum.
 - Form opsi **Keperluan** besar di bawah panel hasil: Menjemput Siswa atau
   Kegiatan Workshop.
+- Form **Foto Selfie** memakai kamera depan dan menyimpan hasil foto di browser.
+- Panel **Hasil Foto** menampilkan foto selfie beserta data NIK, Nama, Alamat,
+  dan Keperluan dari hasil pindai KTP.
 - Hasil JSON dapat diedit dan disalin lewat tombol **Salin** di dalam textarea.
 - Pilihan keperluan otomatis disertakan pada hasil JSON.
 - Seluruh pemrosesan gambar berjalan lokal di browser.
@@ -30,7 +35,7 @@ bun install
 bun run dev
 ```
 
-Buka `http://localhost:5173`, tekan **Mulai Kamera**, lalu izinkan akses kamera.
+Buka `http://localhost:5173`, tekan **Buka Kamera**, lalu izinkan akses kamera.
 
 > Kamera hanya dapat diakses melalui `localhost` atau HTTPS. Jika membuka
 > aplikasi dari alamat IP jaringan lokal, gunakan HTTPS agar browser
@@ -56,11 +61,13 @@ src/
 │   └── base.css                # Reset dan komponen bersama
 ├── components/
 │   ├── AppHeader.vue           # Judul aplikasi
-│   ├── CameraPanel.vue         # Pratinjau kamera dan kontrol capture
+│   ├── CameraPanel.vue         # Pratinjau kamera dan kontrol capture KTP
 │   ├── KeperluanPanel.vue      # Form opsi keperluan tamu
-│   └── ResultPanel.vue         # Textarea JSON dan tombol salin
+│   ├── PhotoResultPanel.vue    # Foto selfie dan ringkasan data KTP
+│   ├── ResultPanel.vue         # Textarea JSON dan tombol salin
+│   └── SelfiePanel.vue         # Kamera depan dan kontrol ambil foto
 ├── composables/
-│   ├── useCamera.js            # Izin, stream, dan capture frame
+│   ├── useCamera.js            # Izin, stream, arah kamera, dan capture frame
 │   └── useKtpScan.js           # Orkestrasi OCR dua tahap
 ├── services/ktp/
 │   ├── ocrClient.js            # Worker Tesseract yang dipakai ulang
@@ -69,6 +76,17 @@ src/
 └── utils/
     └── clipboard.js            # Clipboard API dan fallback
 ```
+
+## Alur Penggunaan
+
+1. Buka kamera pada panel **Pindai KTP** di kolom kiri, lalu tekan **Pindai KTP**.
+2. Periksa dan koreksi hasil OCR pada panel **Hasil** di bawahnya.
+3. Pilih keperluan tamu pada panel **Keperluan**.
+4. Buka kamera pada panel **Foto Selfie** di kolom kanan, lalu tekan **Ambil Foto**.
+5. Panel **Hasil Foto** menampilkan foto tamu beserta data dari hasil pindai KTP.
+
+Hanya satu kamera yang aktif dalam satu waktu. Membuka kamera di satu panel
+akan menutup kamera pada panel lainnya.
 
 ## Cara Kerja OCR
 
@@ -88,7 +106,8 @@ dibutuhkan pada proses OCR pertama.
 - Kualitas hasil bergantung pada pencahayaan, ketajaman kamera, dan posisi KTP.
 - OCR tidak memverifikasi keaslian KTP.
 - Hasil dapat diedit manual untuk mengoreksi salah baca.
-- Gambar dan data tidak disimpan atau dikirim ke mana pun.
+- Gambar KTP dan foto selfie tidak disimpan atau dikirim ke mana pun.
+- Foto selfie hanya berada di memori halaman dan hilang saat halaman dimuat ulang.
 
 ## Kontribusi
 

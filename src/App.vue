@@ -3,7 +3,9 @@ import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import CameraPanel from './components/CameraPanel.vue'
 import KeperluanPanel from './components/KeperluanPanel.vue'
+import PhotoResultPanel from './components/PhotoResultPanel.vue'
 import ResultPanel from './components/ResultPanel.vue'
+import SelfiePanel from './components/SelfiePanel.vue'
 import { useKtpScan } from './composables/useKtpScan.js'
 
 // State OCR dan fungsi pemindaian dipisahkan dari komponen tampilan.
@@ -20,6 +22,36 @@ const {
 // Keperluan tamu disimpan di parent agar bisa digabungkan ke hasil JSON.
 const keperluan = ref('')
 
+// Foto selfie disimpan sebagai data URL agar bisa ditampilkan di panel hasil foto.
+const selfiePhoto = ref('')
+
+// Referensi panel kamera dipakai untuk memastikan hanya satu kamera aktif.
+const ktpCameraRef = ref(null)
+const selfieCameraRef = ref(null)
+
+/**
+ * Menutup kamera selfie sebelum kamera KTP dibuka.
+ */
+function handleKtpCameraRequest() {
+  selfieCameraRef.value?.stop()
+}
+
+/**
+ * Menutup kamera KTP sebelum kamera selfie dibuka.
+ */
+function handleSelfieCameraRequest() {
+  ktpCameraRef.value?.stop()
+}
+
+/**
+ * Menyimpan foto selfie terbaru ke state parent.
+ *
+ * @param {string} photo
+ */
+function handleSelfieCapture(photo) {
+  selfiePhoto.value = photo
+}
+
 /**
  * Menerima frame dari panel kamera lalu menjalankan OCR.
  * Frame berupa canvas agar gambar tidak perlu diunggah ke mana pun.
@@ -35,15 +67,18 @@ async function handleCapture(frame) {
   <div class="app-shell">
     <AppHeader />
 
-    <main class="workspace" aria-label="Area capture dan hasil OCR KTP">
-      <CameraPanel
-        :is-scanning="isScanning"
-        :scan-progress="progress"
-        :scan-status="statusMessage"
-        @capture="handleCapture"
-      />
+    <main class="workspace" aria-label="Area pindai KTP, selfie, dan hasil data tamu">
+      <!-- Kolom kiri: pindai KTP, hasil OCR, lalu pilihan keperluan -->
+      <div class="workspace__column">
+        <CameraPanel
+          ref="ktpCameraRef"
+          :is-scanning="isScanning"
+          :scan-progress="progress"
+          :scan-status="statusMessage"
+          @camera-request="handleKtpCameraRequest"
+          @capture="handleCapture"
+        />
 
-      <div class="workspace__side">
         <ResultPanel
           :result="result"
           :is-scanning="isScanning"
@@ -54,11 +89,27 @@ async function handleCapture(frame) {
 
         <KeperluanPanel v-model="keperluan" />
       </div>
+
+      <!-- Kolom kanan: selfie lalu hasil foto beserta data KTP -->
+      <div class="workspace__column">
+        <SelfiePanel
+          ref="selfieCameraRef"
+          :has-photo="Boolean(selfiePhoto)"
+          @camera-request="handleSelfieCameraRequest"
+          @captured="handleSelfieCapture"
+        />
+
+        <PhotoResultPanel
+          :photo="selfiePhoto"
+          :result="result"
+          :keperluan="keperluan"
+        />
+      </div>
     </main>
 
     <footer class="app-footer">
       <p class="app-footer__text">
-        Seluruh proses OCR berjalan di browser. Gambar KTP tidak diunggah ke server.
+        Seluruh proses OCR dan foto berjalan di browser. Gambar tidak diunggah ke server.
       </p>
     </footer>
   </div>
@@ -75,10 +126,10 @@ async function handleCapture(frame) {
   padding: 3.5rem 2rem 2rem;
 }
 
-/* Dua kolom seimbang: kamera di kiri, hasil dan keperluan di kanan */
+/* Dua kolom seimbang: KTP di kiri, selfie di kanan */
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   align-items: start;
   margin-top: 2.25rem;
@@ -88,8 +139,8 @@ async function handleCapture(frame) {
   min-width: 0;
 }
 
-/* Kolom kanan menampung panel hasil lalu form keperluan di bawahnya */
-.workspace__side {
+/* Setiap kolom menumpuk panel-panelnya dari atas ke bawah */
+.workspace__column {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;

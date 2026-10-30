@@ -8,7 +8,7 @@ const props = defineProps({
   scanStatus: { type: String, default: '' },
 })
 
-const emit = defineEmits(['capture'])
+const emit = defineEmits(['capture', 'camera-request'])
 
 // Seluruh logika kamera diisolasi di composable agar komponen ini fokus
 // pada tampilan dan interaksi pengguna.
@@ -41,6 +41,19 @@ function handleCapture() {
   const frame = captureFrame()
   if (frame) emit('capture', frame)
 }
+
+/**
+ * Memberi tahu parent sebelum kamera dibuka agar kamera panel lain
+ * dimatikan terlebih dahulu. Satu perangkat umumnya hanya bisa memakai
+ * satu kamera aktif dalam satu waktu.
+ */
+function handleStart() {
+  emit('camera-request')
+  start()
+}
+
+// Parent dapat menghentikan kamera ini saat panel kamera lain dibuka.
+defineExpose({ stop })
 </script>
 
 <template>
@@ -100,7 +113,7 @@ function handleCapture() {
         type="button"
         class="button camera-controls__primary"
         :disabled="isStarting || !isSupported"
-        @click="start"
+        @click="handleStart"
       >
         {{ isStarting ? 'Menyiapkan Kamera...' : 'Buka Kamera' }}
       </button>

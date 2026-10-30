@@ -36,6 +36,9 @@ function getCameraErrorMessage(error) {
 }
 
 /**
+ * @param {{ facingMode?: 'environment' | 'user' }} [options]
+ *   `environment` untuk kamera belakang (pindai KTP), `user` untuk kamera depan
+ *   (selfie). Nilai bawaan tetap `environment` agar pemakaian lama tidak berubah.
  * @returns {{
  *   videoRef: import('vue').Ref<HTMLVideoElement | null>,
  *   isActive: import('vue').Ref<boolean>,
@@ -48,7 +51,9 @@ function getCameraErrorMessage(error) {
  *   captureFrame: () => HTMLCanvasElement | null,
  * }}
  */
-export function useCamera() {
+export function useCamera(options = {}) {
+  // Kamera depan dipakai untuk selfie, kamera belakang untuk pindai KTP.
+  const facingMode = options.facingMode ?? 'environment'
   const videoRef = ref(null)
   const stream = shallowRef(null)
   const isActive = ref(false)
@@ -121,8 +126,8 @@ export function useCamera() {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
-          // Utamakan kamera belakang pada perangkat yang memilikinya.
-          facingMode: { ideal: 'environment' },
+          // Utamakan kamera sesuai kebutuhan panel (belakang/depan).
+          facingMode: { ideal: facingMode },
           width: { ideal: 1920 },
           height: { ideal: 1080 },
         },
