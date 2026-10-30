@@ -51,7 +51,7 @@ async function handleCapture(frame) {
 
     <main class="workspace" aria-label="Area kamera KTP, kamera selfie, dan hasil data tamu">
       <!-- Kolom kiri: pindai KTP di atas dan foto selfie di bawah -->
-      <div class="workspace__column">
+      <div class="workspace__column workspace__column--left">
         <CameraPanel
           :is-scanning="isScanning"
           :scan-progress="progress"
@@ -65,25 +65,29 @@ async function handleCapture(frame) {
         />
       </div>
 
-      <!-- Kolom kanan: hasil foto lalu hasil scan beserta keperluan -->
-      <div class="workspace__column">
-        <PhotoResultPanel
-          :photo="selfiePhoto"
-          :result="result"
-          :keperluan="keperluan"
-        />
+      <!-- Kolom kanan: satu panel penuh berisi hasil foto lalu hasil scan beserta keperluan -->
+      <div class="workspace__column workspace__column--right">
+        <section class="panel panel--right-column" aria-label="Hasil foto dan hasil scan">
+          <PhotoResultPanel
+            :photo="selfiePhoto"
+            :result="result"
+            :keperluan="keperluan"
+          />
 
-        <ResultPanel
-          :result="result"
-          :is-scanning="isScanning"
-          :notice="notice"
-          :error="error"
-          :keperluan="keperluan"
-        >
-          <template #keperluan>
-            <KeperluanPanel v-model="keperluan" embedded />
-          </template>
-        </ResultPanel>
+          <div class="panel--right-column__divider" aria-hidden="true"></div>
+
+          <ResultPanel
+            :result="result"
+            :is-scanning="isScanning"
+            :notice="notice"
+            :error="error"
+            :keperluan="keperluan"
+          >
+            <template #keperluan>
+              <KeperluanPanel v-model="keperluan" embedded />
+            </template>
+          </ResultPanel>
+        </section>
       </div>
     </main>
   </div>
@@ -109,6 +113,7 @@ async function handleCapture(frame) {
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.875rem;
   align-items: stretch;
   margin-top: 0.75rem;
@@ -118,13 +123,56 @@ async function handleCapture(frame) {
   min-width: 0;
 }
 
-/* Setiap kolom membagi tinggi tersedia menjadi dua baris panel */
-.workspace__column {
+/* Kolom kiri memakai dua baris panel yang sejajar dengan kolom kanan penuh */
+.workspace__column--left {
+  grid-row: 1 / 3;
   display: grid;
   grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.875rem;
   min-width: 0;
   min-height: 0;
+}
+
+/* Kolom kanan adalah satu panel penuh yang membentang dua baris */
+.workspace__column--right {
+  grid-row: 1 / 3;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace__column {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Panel kanan tunggal: dua bagian tanpa border sendiri, dipisah garis pembatas */
+.panel--right-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.panel--right-column > .panel {
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.panel--right-column__divider {
+  flex: none;
+  height: 1.5px;
+  margin: 0;
+  background: #000;
 }
 
 /* Di ponsel kolom ditumpuk; tablet dan desktop tetap satu layar tanpa scroll */
