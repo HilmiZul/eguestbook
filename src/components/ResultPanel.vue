@@ -7,6 +7,8 @@ const props = defineProps({
   isScanning: { type: Boolean, default: false },
   notice: { type: String, default: '' },
   error: { type: String, default: '' },
+  // Keperluan tamu yang dipilih pada form di bawah panel hasil.
+  keperluan: { type: String, default: '' },
 })
 
 // Nilai textarea disimpan lokal supaya pengguna bisa mengoreksi hasil OCR.
@@ -19,22 +21,30 @@ let copyTimer = null
 const placeholderJson = `{
   "NIK": "",
   "Nama": "",
-  "Alamat": ""
+  "Alamat": "",
+  "Keperluan": ""
 }`
 
 /**
- * Menampilkan hasil baru sebagai JSON yang rapi.
+ * Menampilkan hasil OCR dan keperluan sebagai JSON yang rapi.
  * Hasil kosong sengaja ditampilkan sebagai textarea kosong, bukan objek kosong,
  * agar placeholder contoh tetap terlihat.
  */
 watch(
-  () => props.result,
-  (value) => {
-    const hasAnyValue = Object.values(value ?? {}).some(
+  () => [props.result, props.keperluan],
+  ([result, keperluan]) => {
+    const payload = {
+      NIK: result?.NIK ?? '',
+      Nama: result?.Nama ?? '',
+      Alamat: result?.Alamat ?? '',
+      Keperluan: keperluan ?? '',
+    }
+
+    const hasAnyValue = Object.values(payload).some(
       (fieldValue) => typeof fieldValue === 'string' && fieldValue.trim(),
     )
 
-    textValue.value = hasAnyValue ? JSON.stringify(value, null, 2) : ''
+    textValue.value = hasAnyValue ? JSON.stringify(payload, null, 2) : ''
     copied.value = false
     copyError.value = ''
   },

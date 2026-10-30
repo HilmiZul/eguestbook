@@ -8,7 +8,10 @@ NIK, Nama, dan Alamat menjadi teks JSON langsung di browser.
 - Pratinjau kamera aktif hanya setelah tombol **Mulai Kamera** ditekan.
 - Capture frame dan OCR memakai Tesseract.js dengan model bahasa Indonesia.
 - Ekstraksi NIK, Nama, dan Alamat dengan toleransi terhadap salah baca umum.
+- Form opsi **Keperluan** besar di bawah panel hasil: Menjemput Siswa atau
+  Kegiatan Workshop.
 - Hasil JSON dapat diedit dan disalin lewat tombol **Salin** di dalam textarea.
+- Pilihan keperluan otomatis disertakan pada hasil JSON.
 - Seluruh pemrosesan gambar berjalan lokal di browser.
 
 ## Teknologi
@@ -54,6 +57,7 @@ src/
 ├── components/
 │   ├── AppHeader.vue           # Judul aplikasi
 │   ├── CameraPanel.vue         # Pratinjau kamera dan kontrol capture
+│   ├── KeperluanPanel.vue      # Form opsi keperluan tamu
 │   └── ResultPanel.vue         # Textarea JSON dan tombol salin
 ├── composables/
 │   ├── useCamera.js            # Izin, stream, dan capture frame

@@ -1,6 +1,8 @@
 <script setup>
+import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import CameraPanel from './components/CameraPanel.vue'
+import KeperluanPanel from './components/KeperluanPanel.vue'
 import ResultPanel from './components/ResultPanel.vue'
 import { useKtpScan } from './composables/useKtpScan.js'
 
@@ -14,6 +16,9 @@ const {
   error,
   scan,
 } = useKtpScan()
+
+// Keperluan tamu disimpan di parent agar bisa digabungkan ke hasil JSON.
+const keperluan = ref('')
 
 /**
  * Menerima frame dari panel kamera lalu menjalankan OCR.
@@ -38,12 +43,17 @@ async function handleCapture(frame) {
         @capture="handleCapture"
       />
 
-      <ResultPanel
-        :result="result"
-        :is-scanning="isScanning"
-        :notice="notice"
-        :error="error"
-      />
+      <div class="workspace__side">
+        <ResultPanel
+          :result="result"
+          :is-scanning="isScanning"
+          :notice="notice"
+          :error="error"
+          :keperluan="keperluan"
+        />
+
+        <KeperluanPanel v-model="keperluan" />
+      </div>
     </main>
 
     <footer class="app-footer">
@@ -65,18 +75,25 @@ async function handleCapture(frame) {
   padding: 3.5rem 2rem 2rem;
 }
 
-/* Dua kolom seimbang: kamera di kiri, hasil di kanan */
+/* Dua kolom seimbang: kamera di kiri, hasil dan keperluan di kanan */
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: 1.25rem;
-  align-items: stretch;
+  align-items: start;
   margin-top: 2.25rem;
 }
 
 .workspace > * {
   min-width: 0;
-  height: 100%;
+}
+
+/* Kolom kanan menampung panel hasil lalu form keperluan di bawahnya */
+.workspace__side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
 }
 
 .app-footer {
