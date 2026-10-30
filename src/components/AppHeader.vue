@@ -4,44 +4,24 @@
 
 <template>
   <header class="app-header">
-    <!-- <p class="app-header__eyebrow">Pencatatan Tamu</p> -->
     <h1 class="app-header__title">e-Guestbook.</h1>
-    <!-- <p class="app-header__subtitle"> -->
-    <!--   Capture bagian KTP dan ubah NIK, Nama, serta Alamat menjadi teks JSON. -->
-    <!-- </p> -->
   </header>
 </template>
 
 <style scoped>
 .app-header {
   display: flex;
-  flex-direction: column;
+  flex: none;
   align-items: center;
+  justify-content: center;
   text-align: center;
-}
-
-.app-header__eyebrow {
-  margin: 0 0 0.875rem;
-  color: var(--color-muted);
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
 }
 
 .app-header__title {
   margin: 0;
-  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-size: clamp(1.625rem, 2.6vw, 2.25rem);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1.05;
-}
-
-.app-header__subtitle {
-  max-width: 34rem;
-  margin: 0.875rem 0 0;
-  color: var(--color-muted);
-  font-size: 0.875rem;
-  line-height: 1.7;
 }
 </style>

@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue'
 import { useCamera } from '../composables/useCamera.js'
 
 const props = defineProps({
@@ -19,18 +18,12 @@ const {
   isReady,
   isSupported,
   error,
+  devices,
+  selectedDeviceId,
   start,
   stop,
   captureFrame,
-} = useCamera()
-
-// Label status singkat di kanan judul panel.
-const statusLabel = computed(() => {
-  if (isStarting.value) return 'Menyiapkan'
-  if (props.isScanning) return 'Memindai'
-  if (isActive.value) return 'Aktif'
-  return 'Nonaktif'
-})
+} = useCamera({ facingMode: 'environment', preferredDeviceIndex: 0 })
 
 /**
  * Mengambil frame lalu mengirimkannya ke parent untuk diproses OCR.
@@ -46,50 +39,63 @@ function handleCapture() {
 <template>
   <section class="panel camera-panel" aria-labelledby="camera-panel-title">
     <header class="panel__header">
-      <div>
-        <h2 id="camera-panel-title" class="panel__title">Pindai KTP</h2>
-        <p class="panel__subtitle">Posisikan kartu di dalam bingkai</p>
+      <h2 id="camera-panel-title" class="panel__title">Pindai KTP</h2>
+
+      <div class="panel__tools">
+        <label class="camera-picker">
+          <span class="visually-hidden">Pilih kamera KTP</span>
+          <select
+            v-model="selectedDeviceId"
+            class="camera-picker__select"
+            :disabled="isActive || isStarting"
+          >
+            <option value="">Kamera otomatis</option>
+            <option
+              v-for="(device, index) in devices"
+              :key="device.deviceId"
+              :value="device.deviceId"
+            >
+              {{ device.label || `Kamera ${index + 1}` }}
+            </option>
+          </select>
+        </label>
       </div>
-      <span class="status-pill" :class="{ 'status-pill--active': isActive || isScanning }">
-        {{ statusLabel }}
-      </span>
     </header>
 
-    <div class="camera-stage" :class="{ 'camera-stage--active': isActive }">
-      <video
-        ref="videoRef"
-        class="camera-stage__video"
-        autoplay
-        muted
-        playsinline
-        aria-label="Pratinjau kamera untuk capture KTP"
-      ></video>
+    <div class="camera-stage-frame">
+      <div class="camera-stage" :class="{ 'camera-stage--active': isActive }">
+        <video
+          ref="videoRef"
+          class="camera-stage__video"
+          autoplay
+          muted
+          playsinline
+          aria-label="Pratinjau kamera untuk pindai KTP"
+        ></video>
 
-      <!-- Tampilan awal sebelum kamera dinyalakan -->
-      <div v-if="!isActive" class="camera-stage__empty">
-        <p class="camera-stage__empty-title">Kamera belum aktif</p>
-        <!-- <p class="camera-stage__empty-text"> -->
-        <!--   Tekan Buka Kamera, lalu arahkan KTP ke kamera dengan posisi mendatar. -->
-        <!-- </p> -->
-      </div>
-
-      <!-- Panduan bingkai kartu; hanya tampil saat kamera aktif -->
-      <div v-else class="camera-stage__guide" aria-hidden="true"></div>
-
-      <!-- Overlay progres saat OCR berjalan -->
-      <div v-if="isScanning" class="camera-stage__scan" role="status" aria-live="polite">
-        <p class="camera-stage__scan-title">{{ scanStatus || 'Membaca KTP' }}</p>
-        <div
-          class="camera-stage__progress"
-          role="progressbar"
-          aria-label="Progres pembacaan KTP"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          :aria-valuenow="scanProgress"
-        >
-          <span class="camera-stage__progress-bar" :style="{ width: `${scanProgress}%` }"></span>
+        <!-- Tampilan awal sebelum kamera dinyalakan -->
+        <div v-if="!isActive" class="camera-stage__empty">
+          <p class="camera-stage__empty-title">Kamera belum aktif</p>
         </div>
-        <p class="camera-stage__scan-meta">{{ scanProgress }}%</p>
+
+        <!-- Panduan bingkai kartu; hanya tampil saat kamera aktif -->
+        <div v-else class="camera-stage__guide" aria-hidden="true"></div>
+
+        <!-- Overlay progres saat OCR berjalan -->
+        <div v-if="isScanning" class="camera-stage__scan" role="status" aria-live="polite">
+          <p class="camera-stage__scan-title">{{ scanStatus || 'Membaca KTP' }}</p>
+          <div
+            class="camera-stage__progress"
+            role="progressbar"
+            aria-label="Progres pembacaan KTP"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            :aria-valuenow="scanProgress"
+          >
+            <span class="camera-stage__progress-bar" :style="{ width: `${scanProgress}%` }"></span>
+          </div>
+          <p class="camera-stage__scan-meta">{{ scanProgress }}%</p>
+        </div>
       </div>
     </div>
 
@@ -102,7 +108,7 @@ function handleCapture() {
         :disabled="isStarting || !isSupported"
         @click="start"
       >
-        {{ isStarting ? 'Menyiapkan Kamera...' : 'Buka Kamera' }}
+        {{ isStarting ? 'Menyiapkan...' : 'Buka Kamera' }}
       </button>
 
       <!-- Setelah aktif: capture sebagai aksi utama, stop sebagai aksi sekunder -->
@@ -113,7 +119,7 @@ function handleCapture() {
           :disabled="!isReady || isScanning"
           @click="handleCapture"
         >
-          {{ isScanning ? 'Membaca KTP...' : 'Pindai KTP' }}
+          {{ isScanning ? 'Membaca...' : 'Pindai KTP' }}
         </button>
         <button
           type="button"
@@ -130,9 +136,6 @@ function handleCapture() {
     <p v-else-if="!isSupported" class="feedback feedback--error" role="alert">
       Browser ini tidak mendukung akses kamera.
     </p>
-    <!-- <p v-else class="panel__hint"> -->
-    <!--   Gunakan pencahayaan yang cukup dan hindari pantulan pada permukaan KTP. -->
-    <!-- </p> -->
   </section>
 </template>
 
@@ -143,12 +146,22 @@ function handleCapture() {
   height: 100%;
 }
 
-/* Area pratinjau kamera mengisi sisa tinggi panel */
-.camera-stage {
-  position: relative;
+/* Area pratinjau mengisi sisa tinggi panel dan menjaga rasio kartu KTP */
+.camera-stage-frame {
   flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 0;
   margin-top: 0.625rem;
+  container-type: size;
+}
+
+/* Rasio fisik KTP: 85,6 mm x 54 mm */
+.camera-stage {
+  position: relative;
+  width: min(100%, calc(100cqh * 1.585185185));
+  aspect-ratio: 85.6 / 54;
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
@@ -165,7 +178,7 @@ function handleCapture() {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   opacity: 0;
   transition: opacity 240ms var(--easing-standard);
 }
@@ -180,7 +193,6 @@ function handleCapture() {
   inset: 0;
   display: grid;
   place-content: center;
-  gap: 0.25rem;
   padding: 1rem;
   text-align: center;
 }
@@ -191,23 +203,15 @@ function handleCapture() {
   font-weight: 600;
 }
 
-.camera-stage__empty-text {
-  max-width: 20rem;
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 0.6875rem;
-  line-height: 1.5;
-}
-
 /* Bingkai panduan mengikuti proporsi kartu KTP */
 .camera-stage__guide {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 82%;
+  width: 92%;
   aspect-ratio: 85.6 / 54;
   border: 1.5px dashed rgb(255 255 255 / 78%);
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }

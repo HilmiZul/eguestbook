@@ -49,14 +49,28 @@ async function handleCapture(frame) {
   <div class="app-shell">
     <AppHeader />
 
-    <main class="workspace" aria-label="Area pindai KTP, selfie, dan hasil data tamu">
-      <!-- Kolom kiri: pindai KTP lalu hasil OCR beserta keperluan -->
+    <main class="workspace" aria-label="Area kamera KTP, kamera selfie, dan hasil data tamu">
+      <!-- Kolom kiri: pindai KTP di atas dan foto selfie di bawah -->
       <div class="workspace__column">
         <CameraPanel
           :is-scanning="isScanning"
           :scan-progress="progress"
           :scan-status="statusMessage"
           @capture="handleCapture"
+        />
+
+        <SelfiePanel
+          :has-photo="Boolean(selfiePhoto)"
+          @captured="handleSelfieCapture"
+        />
+      </div>
+
+      <!-- Kolom kanan: hasil foto lalu hasil scan beserta keperluan -->
+      <div class="workspace__column">
+        <PhotoResultPanel
+          :photo="selfiePhoto"
+          :result="result"
+          :keperluan="keperluan"
         />
 
         <ResultPanel
@@ -71,27 +85,7 @@ async function handleCapture(frame) {
           </template>
         </ResultPanel>
       </div>
-
-      <!-- Kolom kanan: selfie lalu hasil foto beserta data KTP -->
-      <div class="workspace__column">
-        <SelfiePanel
-          :has-photo="Boolean(selfiePhoto)"
-          @captured="handleSelfieCapture"
-        />
-
-        <PhotoResultPanel
-          :photo="selfiePhoto"
-          :result="result"
-          :keperluan="keperluan"
-        />
-      </div>
     </main>
-
-    <footer class="app-footer">
-      <p class="app-footer__text">
-        Seluruh proses OCR dan foto berjalan di browser. Gambar tidak diunggah ke server.
-      </p>
-    </footer>
   </div>
 </template>
 
@@ -100,24 +94,24 @@ async function handleCapture(frame) {
 .app-shell {
   display: flex;
   flex-direction: column;
-  width: min(100%, 74rem);
+  width: min(100%, 96rem);
   height: 100vh;
   height: 100dvh;
   min-height: 0;
   margin: 0 auto;
-  padding: 1.25rem 1.5rem 0.75rem;
+  padding: 1rem 1.5rem;
   overflow: hidden;
 }
 
-/* Dua kolom seimbang: KTP di kiri, selfie di kanan */
+/* Dua kolom seimbang: kamera di kiri, hasil di kanan */
 .workspace {
   flex: 1;
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 0.875rem;
   align-items: stretch;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
 .workspace > * {
@@ -128,22 +122,9 @@ async function handleCapture(frame) {
 .workspace__column {
   display: grid;
   grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 1rem;
+  gap: 0.875rem;
   min-width: 0;
   min-height: 0;
-}
-
-.app-footer {
-  flex: none;
-  padding-top: 0.5rem;
-  text-align: center;
-}
-
-.app-footer__text {
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 0.625rem;
-  letter-spacing: 0.01em;
 }
 
 /* Di ponsel kolom ditumpuk; tablet dan desktop tetap satu layar tanpa scroll */
@@ -151,13 +132,13 @@ async function handleCapture(frame) {
   .app-shell {
     height: auto;
     min-height: 100vh;
-    padding: 2rem 1.25rem 1.5rem;
+    padding: 1.5rem 1rem;
     overflow: visible;
   }
 
   .workspace {
     grid-template-columns: minmax(0, 1fr);
-    margin-top: 1.5rem;
+    margin-top: 1rem;
   }
 
   .workspace__column {
@@ -167,7 +148,7 @@ async function handleCapture(frame) {
 
 @media (max-width: 30rem) {
   .app-shell {
-    padding: 1.5rem 0.875rem 1.25rem;
+    padding: 1.25rem 0.75rem;
   }
 }
 </style>

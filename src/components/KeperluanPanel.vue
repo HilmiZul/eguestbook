@@ -41,12 +41,13 @@ function selectOption(value) {
     aria-labelledby="keperluan-panel-title"
   >
     <header class="panel__header keperluan-panel__header">
-      <div>
-        <h2 id="keperluan-panel-title" class="panel__title">Keperluan</h2>
-        <p v-if="!embedded" class="panel__subtitle">Pilih tujuan kunjungan tamu</p>
-      </div>
+      <h2 id="keperluan-panel-title" class="panel__title">Keperluan</h2>
 
-      <span class="status-pill" :class="{ 'status-pill--active': modelValue }">
+      <span
+        v-if="!embedded"
+        class="status-pill"
+        :class="{ 'status-pill--active': modelValue }"
+      >
         {{ statusLabel }}
       </span>
     </header>
@@ -96,11 +97,6 @@ function selectOption(value) {
 
 .keperluan-panel--embedded .panel__title {
   font-size: 0.75rem;
-}
-
-.keperluan-panel--embedded .status-pill {
-  padding: 0.2rem 0.5rem;
-  font-size: 0.5rem;
 }
 
 .keperluan-panel--embedded .keperluan-options {

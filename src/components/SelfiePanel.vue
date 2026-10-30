@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue'
 import { useCamera } from '../composables/useCamera.js'
 
-const props = defineProps({
+defineProps({
   // Status foto disimpan di parent agar panel hasil foto bisa menampilkannya.
   hasPhoto: { type: Boolean, default: false },
 })
@@ -17,18 +16,12 @@ const {
   isReady,
   isSupported,
   error,
+  devices,
+  selectedDeviceId,
   start,
   stop,
   captureFrame,
-} = useCamera({ facingMode: 'user' })
-
-// Label status singkat di kanan judul panel.
-const statusLabel = computed(() => {
-  if (isStarting.value) return 'Menyiapkan'
-  if (isActive.value) return 'Aktif'
-  if (props.hasPhoto) return 'Tersimpan'
-  return 'Nonaktif'
-})
+} = useCamera({ facingMode: 'user', preferredDeviceIndex: 1 })
 
 /**
  * Mengambil frame selfie, membaliknya agar sama dengan pratinjau,
@@ -60,41 +53,50 @@ function handleCapture() {
 <template>
   <section class="panel selfie-panel" aria-labelledby="selfie-panel-title">
     <header class="panel__header">
-      <div>
-        <h2 id="selfie-panel-title" class="panel__title">Foto Selfie</h2>
-        <p class="panel__subtitle">Posisikan wajah di dalam bingkai</p>
+      <h2 id="selfie-panel-title" class="panel__title">Foto Selfie</h2>
+
+      <div class="panel__tools">
+        <label class="camera-picker">
+          <span class="visually-hidden">Pilih kamera selfie</span>
+          <select
+            v-model="selectedDeviceId"
+            class="camera-picker__select"
+            :disabled="isActive || isStarting"
+          >
+            <option value="">Kamera otomatis</option>
+            <option
+              v-for="(device, index) in devices"
+              :key="device.deviceId"
+              :value="device.deviceId"
+            >
+              {{ device.label || `Kamera ${index + 1}` }}
+            </option>
+          </select>
+        </label>
       </div>
-      <span class="status-pill" :class="{ 'status-pill--active': isActive || hasPhoto }">
-        {{ statusLabel }}
-      </span>
     </header>
 
-    <div class="camera-stage" :class="{ 'camera-stage--active': isActive }">
-      <video
-        ref="videoRef"
-        class="camera-stage__video"
-        autoplay
-        muted
-        playsinline
-        aria-label="Pratinjau kamera depan untuk foto selfie"
-      ></video>
+    <div class="camera-stage-frame">
+      <div class="camera-stage" :class="{ 'camera-stage--active': isActive }">
+        <video
+          ref="videoRef"
+          class="camera-stage__video"
+          autoplay
+          muted
+          playsinline
+          aria-label="Pratinjau kamera untuk foto selfie"
+        ></video>
 
-      <!-- Tampilan awal sebelum kamera selfie dinyalakan -->
-      <div v-if="!isActive" class="camera-stage__empty">
-        <p class="camera-stage__empty-title">
-          {{ hasPhoto ? 'Foto sudah diambil' : 'Kamera belum aktif' }}
-        </p>
-        <p class="camera-stage__empty-text">
-          {{
-            hasPhoto
-              ? 'Tekan Ambil Ulang Foto untuk mengganti hasil foto.'
-              : 'Tekan Buka Kamera, lalu ambil foto tamu.'
-          }}
-        </p>
+        <!-- Tampilan awal sebelum kamera selfie dinyalakan -->
+        <div v-if="!isActive" class="camera-stage__empty">
+          <p class="camera-stage__empty-title">
+            {{ hasPhoto ? 'Foto sudah diambil' : 'Kamera belum aktif' }}
+          </p>
+        </div>
+
+        <!-- Bingkai panduan wajah; hanya tampil saat kamera aktif -->
+        <div v-else class="camera-stage__guide" aria-hidden="true"></div>
       </div>
-
-      <!-- Bingkai panduan wajah; hanya tampil saat kamera aktif -->
-      <div v-else class="camera-stage__guide" aria-hidden="true"></div>
     </div>
 
     <div class="camera-controls">
@@ -106,7 +108,7 @@ function handleCapture() {
         :disabled="isStarting || !isSupported"
         @click="start"
       >
-        {{ isStarting ? 'Menyiapkan Kamera...' : hasPhoto ? 'Ambil Ulang Foto' : 'Buka Kamera' }}
+        {{ isStarting ? 'Menyiapkan...' : hasPhoto ? 'Ambil Ulang' : 'Buka Kamera' }}
       </button>
 
       <!-- Setelah aktif: ambil foto sebagai aksi utama -->
@@ -140,11 +142,21 @@ function handleCapture() {
 }
 
 /* Area pratinjau selfie mengisi sisa tinggi panel */
-.camera-stage {
-  position: relative;
+.camera-stage-frame {
   flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 0;
   margin-top: 0.625rem;
+  container-type: size;
+}
+
+/* Rasio 16:9 mengikuti gambar webcam */
+.camera-stage {
+  position: relative;
+  width: min(100%, calc(100cqh * 16 / 9));
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
@@ -176,7 +188,6 @@ function handleCapture() {
   inset: 0;
   display: grid;
   place-content: center;
-  gap: 0.25rem;
   padding: 1rem;
   text-align: center;
 }
@@ -185,14 +196,6 @@ function handleCapture() {
   margin: 0;
   font-size: 0.8125rem;
   font-weight: 600;
-}
-
-.camera-stage__empty-text {
-  max-width: 20rem;
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 0.6875rem;
-  line-height: 1.5;
 }
 
 /* Bingkai oval membantu pengguna memosisikan wajah */

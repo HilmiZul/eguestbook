@@ -6,8 +6,12 @@ form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
 
 ## Fitur
 
-- Layout dua kolom satu layar: pindai KTP di kiri, selfie di kanan, tanpa scroll.
+- Layout dua kolom satu layar: kamera KTP dan selfie di kiri, hasil foto dan
+  hasil scan di kanan, tanpa scroll.
+- Layout desktop dioptimalkan untuk Full HD 1920 x 1080 piksel.
 - Kamera KTP dan kamera selfie dapat aktif bersamaan.
+- Pemilih **Kamera** di tiap panel untuk memisahkan dua webcam.
+- Pratinjau kamera KTP memakai rasio fisik kartu KTP (85,6 : 54).
 - Pratinjau kamera aktif hanya setelah tombol **Buka Kamera** ditekan.
 - Capture frame dan OCR memakai Tesseract.js dengan model bahasa Indonesia.
 - Ekstraksi NIK, Nama, dan Alamat dengan toleransi terhadap salah baca umum.
@@ -67,7 +71,7 @@ src/
 │   ├── ResultPanel.vue         # Textarea JSON, tombol salin, dan keperluan
 │   └── SelfiePanel.vue         # Kamera depan dan kontrol ambil foto
 ├── composables/
-│   ├── useCamera.js            # Izin, stream, arah kamera, dan capture frame
+│   ├── useCamera.js            # Izin, stream, pilihan kamera, dan capture frame
 │   └── useKtpScan.js           # Orkestrasi OCR dua tahap
 ├── services/ktp/
 │   ├── ocrClient.js            # Worker Tesseract yang dipakai ulang
@@ -79,15 +83,18 @@ src/
 
 ## Alur Penggunaan
 
-1. Buka kamera pada panel **Pindai KTP** di kolom kiri, lalu tekan **Pindai KTP**.
-2. Periksa dan koreksi hasil OCR pada panel **Hasil** di bawahnya.
+1. Pilih **Kamera** pada panel **Pindai KTP** di kiri atas, lalu tekan **Buka Kamera**.
+2. Tekan **Pindai KTP**; hasil OCR tampil pada panel **Hasil** di kanan bawah.
 3. Pilih keperluan tamu pada bagian bawah panel **Hasil**.
-4. Buka kamera pada panel **Foto Selfie** di kolom kanan, lalu tekan **Ambil Foto**.
-5. Panel **Hasil Foto** menampilkan foto tamu beserta data dari hasil pindai KTP.
+4. Pilih **Kamera** lain pada panel **Foto Selfie** di kiri bawah, lalu tekan **Buka Kamera**.
+5. Tekan **Ambil Foto**; panel **Hasil Foto** di kanan atas menampilkan foto tamu
+   beserta data KTP.
 
 Kedua kamera dapat menyala bersamaan sehingga KTP dan selfie bisa diproses
-dalam satu sesi. Layout desktop dan tablet disusun agar seluruh panel muat
-dalam satu layar tanpa scroll. Pada layar ponsel yang sangat sempit, kolom
+dalam satu sesi. Bila terdapat dua webcam, pilihan **Kamera otomatis** akan
+memakai perangkat yang berbeda untuk panel KTP dan selfie. Layout desktop
+dioptimalkan untuk 1920 x 1080 piksel dan tetap muat tanpa scroll pada tablet
+maupun layar yang lebih kecil. Pada layar ponsel yang sangat sempit, kolom
 ditumpuk agar tetap dapat digunakan.
 
 ## Cara Kerja OCR

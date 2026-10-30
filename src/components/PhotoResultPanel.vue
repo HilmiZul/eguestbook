@@ -23,10 +23,7 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
 <template>
   <section class="panel photo-result-panel" aria-labelledby="photo-result-panel-title">
     <header class="panel__header">
-      <div>
-        <h2 id="photo-result-panel-title" class="panel__title">Hasil Foto</h2>
-        <p class="panel__subtitle">Foto tamu dan data hasil pindai KTP</p>
-      </div>
+      <h2 id="photo-result-panel-title" class="panel__title">Hasil Foto</h2>
 
       <span class="status-pill" :class="{ 'status-pill--active': photo }">
         {{ statusLabel }}
@@ -39,9 +36,6 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
       <!-- Tampilan sebelum foto selfie diambil -->
       <div v-else class="photo-result-panel__empty">
         <p class="photo-result-panel__empty-title">Belum ada foto</p>
-        <p class="photo-result-panel__empty-text">
-          Ambil foto pada panel Foto Selfie di atas.
-        </p>
       </div>
     </div>
 
@@ -52,8 +46,6 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
         <dd class="photo-result-panel__value">{{ field.value }}</dd>
       </div>
     </dl>
-
-    <p class="panel__hint">Data diambil otomatis dari hasil pindai KTP.</p>
   </section>
 </template>
 
@@ -80,7 +72,7 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .photo-result-panel__empty {
@@ -88,7 +80,6 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
   inset: 0;
   display: grid;
   place-content: center;
-  gap: 0.25rem;
   padding: 1rem;
   text-align: center;
 }
@@ -97,13 +88,6 @@ const statusLabel = computed(() => (props.photo ? 'Tersimpan' : 'Belum ada'))
   margin: 0;
   font-size: 0.8125rem;
   font-weight: 600;
-}
-
-.photo-result-panel__empty-text {
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 0.6875rem;
-  line-height: 1.5;
 }
 
 /* Daftar data tamu dengan garis pemisah tipis antar baris */

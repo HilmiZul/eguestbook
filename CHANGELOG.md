@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v1.4.0 (30 Oktober 2026)
+
+- Feat: pratinjau kamera KTP memakai rasio fisik kartu KTP
+- Feat: layout dua kolom: kamera KTP dan selfie di kiri, hasil foto dan hasil scan di kanan
+- Feat: layout desktop dioptimalkan untuk Full HD 1920 x 1080 tanpa scroll
+- Feat: pemilih kamera pada tiap panel untuk memisahkan dua webcam
+- Feat: label status pada panel kamera dihapus agar tampilan lebih ringkas
+- Feat: teks petunjuk yang tidak perlu dikurangi agar tampilan lebih ringkas
+
 ## v1.3.0 (30 Oktober 2026)
 
 - Feat: kamera KTP dan kamera selfie dapat aktif bersamaan

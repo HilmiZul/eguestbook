@@ -97,10 +97,7 @@ onBeforeUnmount(() => {
 <template>
   <section class="panel result-panel" aria-labelledby="result-panel-title">
     <header class="panel__header">
-      <div>
-        <h2 id="result-panel-title" class="panel__title">Hasil</h2>
-        <!-- <p class="panel__subtitle">Format JSON &middot; NIK, Nama, Alamat</p> -->
-      </div>
+      <h2 id="result-panel-title" class="panel__title">Hasil</h2>
 
       <span class="status-pill" :class="{ 'status-pill--active': isScanning || foundCount === 3 }">
         {{ statusLabel }}
@@ -114,9 +111,9 @@ onBeforeUnmount(() => {
         :key="field.label"
         class="field-chip"
         :class="{ 'field-chip--found': field.found }"
+        :aria-label="`${field.label}: ${field.found ? 'terbaca' : 'kosong'}`"
       >
         <span class="field-chip__label">{{ field.label }}</span>
-        <span class="field-chip__state">{{ field.found ? 'Terbaca' : 'Kosong' }}</span>
       </li>
     </ul>
 
@@ -148,8 +145,6 @@ onBeforeUnmount(() => {
 
     <p v-if="error" class="feedback feedback--error" role="alert">{{ error }}</p>
     <p v-else-if="notice" class="feedback" role="status">{{ notice }}</p>
-    <p v-else-if="isScanning" class="panel__hint">Sedang membaca KTP...</p>
-    <!-- <p v-else class="panel__hint">Hasil akan muncul di sini setelah capture.</p> -->
 
     <p v-if="copyError" class="feedback feedback--error" role="alert">{{ copyError }}</p>
 
@@ -199,12 +194,6 @@ onBeforeUnmount(() => {
 .field-chip__label {
   font-size: 0.625rem;
   font-weight: 600;
-}
-
-.field-chip__state {
-  font-size: 0.5rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 /* Wadah textarea dan tombol copy */
