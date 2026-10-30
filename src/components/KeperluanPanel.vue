@@ -4,6 +4,8 @@ import { computed } from 'vue'
 const props = defineProps({
   // Nilai pilihan aktif dikendalikan oleh parent lewat v-model.
   modelValue: { type: String, default: '' },
+  // Mode embedded dipakai saat form digabung ke dalam panel hasil KTP.
+  embedded: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -33,11 +35,15 @@ function selectOption(value) {
 </script>
 
 <template>
-  <section class="panel keperluan-panel" aria-labelledby="keperluan-panel-title">
-    <header class="panel__header">
+  <section
+    class="keperluan-panel"
+    :class="{ panel: !embedded, 'keperluan-panel--embedded': embedded }"
+    aria-labelledby="keperluan-panel-title"
+  >
+    <header class="panel__header keperluan-panel__header">
       <div>
         <h2 id="keperluan-panel-title" class="panel__title">Keperluan</h2>
-        <p class="panel__subtitle">Pilih tujuan kunjungan tamu</p>
+        <p v-if="!embedded" class="panel__subtitle">Pilih tujuan kunjungan tamu</p>
       </div>
 
       <span class="status-pill" :class="{ 'status-pill--active': modelValue }">
@@ -67,18 +73,56 @@ function selectOption(value) {
 
         <span class="keperluan-option__body">
           <span class="keperluan-option__title">{{ option.value }}</span>
-          <span class="keperluan-option__description">{{ option.description }}</span>
+          <span v-if="!embedded" class="keperluan-option__description">
+            {{ option.description }}
+          </span>
         </span>
       </label>
     </div>
 
-    <p class="panel__hint">Pilihan keperluan akan disertakan pada hasil JSON.</p>
+    <p v-if="!embedded" class="panel__hint">Pilihan keperluan akan disertakan pada hasil JSON.</p>
   </section>
 </template>
 
 <style scoped>
 .keperluan-panel {
   min-width: 0;
+}
+
+/* Versi ringkas saat digabung ke dalam panel hasil KTP */
+.keperluan-panel--embedded .keperluan-panel__header {
+  align-items: center;
+}
+
+.keperluan-panel--embedded .panel__title {
+  font-size: 0.75rem;
+}
+
+.keperluan-panel--embedded .status-pill {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.5rem;
+}
+
+.keperluan-panel--embedded .keperluan-options {
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.keperluan-panel--embedded .keperluan-option {
+  min-height: 0;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius-md);
+}
+
+.keperluan-panel--embedded .keperluan-option__marker {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.0625rem;
+}
+
+.keperluan-panel--embedded .keperluan-option__title {
+  font-size: 0.6875rem;
 }
 
 /* Dua kartu opsi sejajar dengan jarak yang lega */

@@ -6,12 +6,12 @@ form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
 
 ## Fitur
 
-- Layout dua kolom: pindai KTP di kiri, selfie di kanan.
+- Layout dua kolom satu layar: pindai KTP di kiri, selfie di kanan, tanpa scroll.
+- Kamera KTP dan kamera selfie dapat aktif bersamaan.
 - Pratinjau kamera aktif hanya setelah tombol **Buka Kamera** ditekan.
 - Capture frame dan OCR memakai Tesseract.js dengan model bahasa Indonesia.
 - Ekstraksi NIK, Nama, dan Alamat dengan toleransi terhadap salah baca umum.
-- Form opsi **Keperluan** besar di bawah panel hasil: Menjemput Siswa atau
-  Kegiatan Workshop.
+- Form opsi **Keperluan** ringkas menyatu di bagian bawah panel Hasil KTP.
 - Form **Foto Selfie** memakai kamera depan dan menyimpan hasil foto di browser.
 - Panel **Hasil Foto** menampilkan foto selfie beserta data NIK, Nama, Alamat,
   dan Keperluan dari hasil pindai KTP.
@@ -62,9 +62,9 @@ src/
 ├── components/
 │   ├── AppHeader.vue           # Judul aplikasi
 │   ├── CameraPanel.vue         # Pratinjau kamera dan kontrol capture KTP
-│   ├── KeperluanPanel.vue      # Form opsi keperluan tamu
+│   ├── KeperluanPanel.vue      # Form opsi keperluan di panel hasil
 │   ├── PhotoResultPanel.vue    # Foto selfie dan ringkasan data KTP
-│   ├── ResultPanel.vue         # Textarea JSON dan tombol salin
+│   ├── ResultPanel.vue         # Textarea JSON, tombol salin, dan keperluan
 │   └── SelfiePanel.vue         # Kamera depan dan kontrol ambil foto
 ├── composables/
 │   ├── useCamera.js            # Izin, stream, arah kamera, dan capture frame
@@ -81,12 +81,14 @@ src/
 
 1. Buka kamera pada panel **Pindai KTP** di kolom kiri, lalu tekan **Pindai KTP**.
 2. Periksa dan koreksi hasil OCR pada panel **Hasil** di bawahnya.
-3. Pilih keperluan tamu pada panel **Keperluan**.
+3. Pilih keperluan tamu pada bagian bawah panel **Hasil**.
 4. Buka kamera pada panel **Foto Selfie** di kolom kanan, lalu tekan **Ambil Foto**.
 5. Panel **Hasil Foto** menampilkan foto tamu beserta data dari hasil pindai KTP.
 
-Hanya satu kamera yang aktif dalam satu waktu. Membuka kamera di satu panel
-akan menutup kamera pada panel lainnya.
+Kedua kamera dapat menyala bersamaan sehingga KTP dan selfie bisa diproses
+dalam satu sesi. Layout desktop dan tablet disusun agar seluruh panel muat
+dalam satu layar tanpa scroll. Pada layar ponsel yang sangat sempit, kolom
+ditumpuk agar tetap dapat digunakan.
 
 ## Cara Kerja OCR
 

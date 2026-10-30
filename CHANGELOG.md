@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v1.3.0 (30 Oktober 2026)
+
+- Feat: kamera KTP dan kamera selfie dapat aktif bersamaan
+- Feat: layout desktop dan tablet dibuat satu layar penuh tanpa scroll
+- Feat: ukuran panel, tombol, dan teks dikecilkan agar semua form muat
+- Feat: form Keperluan digabung ke bagian bawah panel Hasil KTP
+- Feat: panel hasil dan selfie menyesuaikan tinggi layar secara otomatis
+
 ## v1.2.0 (30 Oktober 2026)
 
 - Feat: mengubah layout menjadi dua kolom, pindai KTP di kiri dan selfie di kanan

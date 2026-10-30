@@ -25,24 +25,6 @@ const keperluan = ref('')
 // Foto selfie disimpan sebagai data URL agar bisa ditampilkan di panel hasil foto.
 const selfiePhoto = ref('')
 
-// Referensi panel kamera dipakai untuk memastikan hanya satu kamera aktif.
-const ktpCameraRef = ref(null)
-const selfieCameraRef = ref(null)
-
-/**
- * Menutup kamera selfie sebelum kamera KTP dibuka.
- */
-function handleKtpCameraRequest() {
-  selfieCameraRef.value?.stop()
-}
-
-/**
- * Menutup kamera KTP sebelum kamera selfie dibuka.
- */
-function handleSelfieCameraRequest() {
-  ktpCameraRef.value?.stop()
-}
-
 /**
  * Menyimpan foto selfie terbaru ke state parent.
  *
@@ -68,14 +50,12 @@ async function handleCapture(frame) {
     <AppHeader />
 
     <main class="workspace" aria-label="Area pindai KTP, selfie, dan hasil data tamu">
-      <!-- Kolom kiri: pindai KTP, hasil OCR, lalu pilihan keperluan -->
+      <!-- Kolom kiri: pindai KTP lalu hasil OCR beserta keperluan -->
       <div class="workspace__column">
         <CameraPanel
-          ref="ktpCameraRef"
           :is-scanning="isScanning"
           :scan-progress="progress"
           :scan-status="statusMessage"
-          @camera-request="handleKtpCameraRequest"
           @capture="handleCapture"
         />
 
@@ -85,17 +65,17 @@ async function handleCapture(frame) {
           :notice="notice"
           :error="error"
           :keperluan="keperluan"
-        />
-
-        <KeperluanPanel v-model="keperluan" />
+        >
+          <template #keperluan>
+            <KeperluanPanel v-model="keperluan" embedded />
+          </template>
+        </ResultPanel>
       </div>
 
       <!-- Kolom kanan: selfie lalu hasil foto beserta data KTP -->
       <div class="workspace__column">
         <SelfiePanel
-          ref="selfieCameraRef"
           :has-photo="Boolean(selfiePhoto)"
-          @camera-request="handleSelfieCameraRequest"
           @captured="handleSelfieCapture"
         />
 
@@ -116,65 +96,78 @@ async function handleCapture(frame) {
 </template>
 
 <style scoped>
-/* Kerangka halaman: konten di tengah dengan ruang napas yang cukup */
+/* Kerangka halaman: seluruh konten harus muat dalam satu layar tanpa scroll */
 .app-shell {
   display: flex;
   flex-direction: column;
   width: min(100%, 74rem);
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   margin: 0 auto;
-  padding: 3.5rem 2rem 2rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+  overflow: hidden;
 }
 
 /* Dua kolom seimbang: KTP di kiri, selfie di kanan */
 .workspace {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
-  align-items: start;
-  margin-top: 2.25rem;
+  gap: 1rem;
+  align-items: stretch;
+  margin-top: 1rem;
 }
 
 .workspace > * {
   min-width: 0;
 }
 
-/* Setiap kolom menumpuk panel-panelnya dari atas ke bawah */
+/* Setiap kolom membagi tinggi tersedia menjadi dua baris panel */
 .workspace__column {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
   min-width: 0;
+  min-height: 0;
 }
 
 .app-footer {
-  margin-top: auto;
-  padding-top: 2.5rem;
+  flex: none;
+  padding-top: 0.5rem;
   text-align: center;
 }
 
 .app-footer__text {
   margin: 0;
   color: var(--color-muted);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.01em;
 }
 
-/* Di tablet dan ponsel, kolom ditumpuk agar kamera dan hasil tetap lega */
-@media (max-width: 56rem) {
+/* Di ponsel kolom ditumpuk; tablet dan desktop tetap satu layar tanpa scroll */
+@media (max-width: 40rem) {
   .app-shell {
-    padding: 2.5rem 1.25rem 1.5rem;
+    height: auto;
+    min-height: 100vh;
+    padding: 2rem 1.25rem 1.5rem;
+    overflow: visible;
   }
 
   .workspace {
     grid-template-columns: minmax(0, 1fr);
-    margin-top: 1.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .workspace__column {
+    grid-template-rows: auto auto;
   }
 }
 
 @media (max-width: 30rem) {
   .app-shell {
-    padding: 2rem 0.875rem 1.25rem;
+    padding: 1.5rem 0.875rem 1.25rem;
   }
 }
 </style>

@@ -152,23 +152,29 @@ onBeforeUnmount(() => {
     <!-- <p v-else class="panel__hint">Hasil akan muncul di sini setelah capture.</p> -->
 
     <p v-if="copyError" class="feedback feedback--error" role="alert">{{ copyError }}</p>
-    <p id="result-help" class="panel__hint">
-      *Editable
-    </p>
+
+    <!-- Form keperluan digabung di bagian bawah panel hasil -->
+    <div class="result-panel__keperluan">
+      <slot name="keperluan" />
+    </div>
+
+    <p id="result-help" class="visually-hidden">Hasil dapat diedit manual.</p>
   </section>
 </template>
 
 <style scoped>
 .result-panel {
   min-width: 0;
+  min-height: 0;
+  height: 100%;
 }
 
 /* Deretan chip status field */
 .field-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1.125rem 0 0;
+  gap: 0.375rem;
+  margin: 0.625rem 0 0;
   padding: 0;
   list-style: none;
 }
@@ -176,8 +182,8 @@ onBeforeUnmount(() => {
 .field-chip {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.375rem;
-  padding: 0.375rem 0.625rem;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
@@ -191,12 +197,12 @@ onBeforeUnmount(() => {
 }
 
 .field-chip__label {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 600;
 }
 
 .field-chip__state {
-  font-size: 0.5625rem;
+  font-size: 0.5rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -205,22 +211,22 @@ onBeforeUnmount(() => {
 .result-panel__editor {
   position: relative;
   display: flex;
-  flex: 1;
-  min-height: 18rem;
-  margin-top: 0.75rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 0.5rem;
 }
 
 .result-panel__textarea {
   width: 100%;
-  min-height: 18rem;
-  padding: 1rem 1rem 4.25rem;
+  min-height: 0;
+  padding: 0.625rem 0.625rem 2.75rem;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  line-height: 1.75;
+  font-size: 0.75rem;
+  line-height: 1.5;
   corner-shape: squircle;
   resize: none;
   tab-size: 2;
@@ -244,14 +250,21 @@ onBeforeUnmount(() => {
 /* Posisi tombol copy selalu terlihat di sudut kanan bawah textarea */
 .result-panel__copy {
   position: absolute;
-  right: 0.875rem;
-  bottom: 0.875rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+}
+
+/* Form keperluan menyatu di bagian bawah panel hasil */
+.result-panel__keperluan {
+  flex: none;
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--color-line);
 }
 
 @media (max-width: 30rem) {
-  .result-panel__editor,
   .result-panel__textarea {
-    min-height: 20rem;
+    font-size: 0.6875rem;
   }
 }
 </style>

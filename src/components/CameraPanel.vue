@@ -8,7 +8,7 @@ const props = defineProps({
   scanStatus: { type: String, default: '' },
 })
 
-const emit = defineEmits(['capture', 'camera-request'])
+const emit = defineEmits(['capture'])
 
 // Seluruh logika kamera diisolasi di composable agar komponen ini fokus
 // pada tampilan dan interaksi pengguna.
@@ -41,19 +41,6 @@ function handleCapture() {
   const frame = captureFrame()
   if (frame) emit('capture', frame)
 }
-
-/**
- * Memberi tahu parent sebelum kamera dibuka agar kamera panel lain
- * dimatikan terlebih dahulu. Satu perangkat umumnya hanya bisa memakai
- * satu kamera aktif dalam satu waktu.
- */
-function handleStart() {
-  emit('camera-request')
-  start()
-}
-
-// Parent dapat menghentikan kamera ini saat panel kamera lain dibuka.
-defineExpose({ stop })
 </script>
 
 <template>
@@ -113,7 +100,7 @@ defineExpose({ stop })
         type="button"
         class="button camera-controls__primary"
         :disabled="isStarting || !isSupported"
-        @click="handleStart"
+        @click="start"
       >
         {{ isStarting ? 'Menyiapkan Kamera...' : 'Buka Kamera' }}
       </button>
@@ -152,13 +139,16 @@ defineExpose({ stop })
 <style scoped>
 .camera-panel {
   min-width: 0;
+  min-height: 0;
+  height: 100%;
 }
 
-/* Area pratinjau kamera dengan rasio yang nyaman untuk KTP */
+/* Area pratinjau kamera mengisi sisa tinggi panel */
 .camera-stage {
   position: relative;
-  aspect-ratio: 3 / 2;
-  margin-top: 1.125rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 0.625rem;
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
@@ -191,13 +181,13 @@ defineExpose({ stop })
   display: grid;
   place-content: center;
   gap: 0.25rem;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 }
 
 .camera-stage__empty-title {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
@@ -205,8 +195,8 @@ defineExpose({ stop })
   max-width: 20rem;
   margin: 0;
   color: var(--color-muted);
-  font-size: 0.75rem;
-  line-height: 1.6;
+  font-size: 0.6875rem;
+  line-height: 1.5;
 }
 
 /* Bingkai panduan mengikuti proporsi kartu KTP */
@@ -269,9 +259,10 @@ defineExpose({ stop })
 
 /* Tombol kamera: aksi utama melebar, aksi sekunder tetap ringkas */
 .camera-controls {
+  flex: none;
   display: flex;
-  gap: 0.625rem;
-  margin-top: 1rem;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
 }
 
 .camera-controls__primary {
