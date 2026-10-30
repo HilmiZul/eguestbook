@@ -115,22 +115,27 @@ function emitUpdate() {
   flex-direction: column;
 }
 
-/* Bingkai foto mengisi sisa tinggi panel */
+/* Bingkai foto menyesuaikan ukuran asli pengambilan foto */
 .photo-result-panel__preview {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
+  max-height: 50%;
   margin-top: 0.625rem;
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
   corner-shape: squircle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .photo-result-panel__preview img {
   display: block;
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 
