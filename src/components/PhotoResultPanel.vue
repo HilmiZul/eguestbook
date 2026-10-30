@@ -119,7 +119,7 @@ function emitUpdate() {
 .photo-result-panel__preview {
   position: relative;
   flex: 0 0 auto;
-  max-height: 50%;
+  max-height: 65%;
   margin-top: 0.625rem;
   overflow: hidden;
   border-radius: var(--radius-lg);
