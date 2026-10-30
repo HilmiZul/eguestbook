@@ -153,6 +153,11 @@ onBeforeUnmount(() => {
       <slot name="keperluan" />
     </div>
 
+    <!-- Tombol kirim (belum difungsikan) -->
+    <div class="result-panel__submit">
+      <button type="button" class="button">Kirim</button>
+    </div>
+
     <p id="result-help" class="visually-hidden">Hasil dapat diedit manual.</p>
   </section>
 </template>
@@ -249,6 +254,14 @@ onBeforeUnmount(() => {
   margin-top: 0.625rem;
   padding-top: 0.625rem;
   border-top: 1px solid var(--color-line);
+}
+
+/* Tombol kirim ditempatkan di kanan bawah panel hasil */
+.result-panel__submit {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.625rem;
 }
 
 @media (max-width: 30rem) {
