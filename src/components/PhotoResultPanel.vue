@@ -7,6 +7,8 @@ const props = defineProps({
   // Data hasil pindai KTP yang otomatis ditampilkan di panel ini.
   result: { type: Object, required: true },
   keperluan: { type: String, default: '' },
+  // Pesan hasil pemindaian (termasuk peringatan field yang belum terbaca).
+  notice: { type: String, default: '' },
 })
 
 const emit = defineEmits(['update:result'])
@@ -57,6 +59,10 @@ function emitUpdate() {
         <p class="photo-result-panel__empty-title">Belum ada foto</p>
       </div>
     </div>
+
+    <p v-if="notice" class="photo-result-panel__notice" role="status">
+      {{ notice }}
+    </p>
 
     <!-- Data hasil scan: NIK dan Nama di kiri (atas-bawah), Alamat di kanan (textarea) -->
     <div class="photo-result-panel__fields">
@@ -152,6 +158,19 @@ function emitUpdate() {
   margin: 0;
   font-size: 0.8125rem;
   font-weight: 600;
+}
+
+/* Pesan hasil pemindaian dipindah ke bawah foto */
+.photo-result-panel__notice {
+  flex: none;
+  margin: 0.5rem 0 0;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-ink-soft);
+  font-size: 0.6875rem;
+  line-height: 1.4;
 }
 
 /* Field hasil scan: NIK dan Nama di kiri, Alamat (textarea) di kanan */

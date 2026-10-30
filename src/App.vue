@@ -72,12 +72,12 @@ async function handleCapture(frame) {
             v-model:result="result"
             :photo="selfiePhoto"
             :keperluan="keperluan"
+            :notice="notice"
           />
 
           <ResultPanel
             :result="result"
             :is-scanning="isScanning"
-            :notice="notice"
             :error="error"
           >
             <template #keperluan>

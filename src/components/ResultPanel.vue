@@ -4,7 +4,6 @@ import { computed } from 'vue'
 const props = defineProps({
   result: { type: Object, required: true },
   isScanning: { type: Boolean, default: false },
-  notice: { type: String, default: '' },
   error: { type: String, default: '' },
 })
 
@@ -21,17 +20,14 @@ const statusLabel = computed(() => {
 </script>
 
 <template>
-  <section class="panel result-panel" aria-labelledby="result-panel-title">
+  <section class="panel result-panel">
     <header class="panel__header">
-      <h2 id="result-panel-title" class="panel__title">Hasil</h2>
-
       <span class="status-pill" :class="{ 'status-pill--active': isScanning || foundCount === 3 }">
         {{ statusLabel }}
       </span>
     </header>
 
     <p v-if="error" class="feedback feedback--error" role="alert">{{ error }}</p>
-    <p v-else-if="notice" class="feedback" role="status">{{ notice }}</p>
 
     <!-- Opsi keperluan mengisi sisa ruang panel -->
     <div class="result-panel__keperluan">
