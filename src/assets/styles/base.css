@@ -199,6 +199,12 @@ button {
   font-size: 0.625rem;
 }
 
+/* Tombol sekunder: outline, untuk aksi pendukung seperti Lengkap */
+.button--secondary {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
 /* Teks status dan pesan kesalahan tetap monokrom */
 .feedback {
   margin: 0.5rem 0 0;

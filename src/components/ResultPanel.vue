@@ -34,8 +34,9 @@ const statusLabel = computed(() => {
       <slot name="keperluan" />
     </div>
 
-    <!-- Tombol kirim (belum difungsikan) -->
+    <!-- Tombol Lengkap dan Kirim (belum difungsikan) -->
     <div class="result-panel__submit">
+      <button type="button" class="button button--secondary">Lengkap</button>
       <button type="button" class="button">Kirim</button>
     </div>
   </section>
@@ -66,7 +67,8 @@ const statusLabel = computed(() => {
 .result-panel__submit {
   flex: none;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
   margin-top: 0.625rem;
 }
 
