@@ -155,7 +155,6 @@ async function handleCapture(frame) {
 }
 
 .panel--right-column > .panel {
-  flex: 1 1 0;
   min-height: 0;
   height: auto;
   margin: 0;
@@ -163,6 +162,20 @@ async function handleCapture(frame) {
   border-radius: 0;
   box-shadow: none;
   background: transparent;
+}
+
+/* Bagian foto mendapat ruang lebih agar input NIK/Nama/Alamat tidak terpotong */
+.panel--right-column > .photo-result-panel {
+  flex: 2 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bagian hasil (keperluan + Kirim) digeser ke bawah */
+.panel--right-column > .result-panel {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Di ponsel kolom ditumpuk; tablet dan desktop tetap satu layar tanpa scroll */
