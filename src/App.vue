@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { SHEETS_API_URL } from './config.js'
 import AppHeader from './components/AppHeader.vue'
 import CameraPanel from './components/CameraPanel.vue'
 import KeperluanPanel from './components/KeperluanPanel.vue'
@@ -25,6 +26,11 @@ const keperluan = ref('')
 // Foto selfie disimpan sebagai data URL agar bisa ditampilkan di panel hasil foto.
 const selfiePhoto = ref('')
 
+// Status pengiriman data ke spreadsheet.
+const isSending = ref(false)
+const sendStatus = ref('')
+const sendError = ref('')
+
 /**
  * Menyimpan foto selfie terbaru ke state parent.
  *
@@ -32,6 +38,48 @@ const selfiePhoto = ref('')
  */
 function handleSelfieCapture(photo) {
   selfiePhoto.value = photo
+}
+
+/**
+ * Mengirim data tamu ke Google Sheets lewat Apps Script.
+ */
+async function handleSend() {
+  sendStatus.value = ''
+  sendError.value = ''
+
+  if (!SHEETS_API_URL) {
+    sendError.value = 'URL API belum diatur. Isi SHEETS_API_URL di src/config.js.'
+    return
+  }
+
+  isSending.value = true
+
+  try {
+    const payload = {
+      nik: result.value?.NIK ?? '',
+      nama: result.value?.Nama ?? '',
+      alamat: result.value?.Alamat ?? '',
+      keperluan: keperluan.value ?? '',
+      foto: selfiePhoto.value ? selfiePhoto.value.split(',')[1] ?? '' : '',
+    }
+
+    await fetch(SHEETS_API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+    })
+
+    sendStatus.value = 'Terkirim'
+    window.setTimeout(() => {
+      sendStatus.value = ''
+    }, 2500)
+  } catch (caughtError) {
+    console.error('[Kirim]', caughtError)
+    sendError.value = 'Gagal mengirim data. Periksa koneksi atau URL API.'
+  } finally {
+    isSending.value = false
+  }
 }
 
 /**
@@ -79,10 +127,15 @@ async function handleCapture(frame) {
             :result="result"
             :is-scanning="isScanning"
             :error="error"
+            :is-sending="isSending"
+            @submit="handleSend"
           >
             <template #keperluan>
               <KeperluanPanel v-model="keperluan" embedded />
             </template>
+
+            <p v-if="sendStatus" class="feedback" role="status">{{ sendStatus }}</p>
+            <p v-if="sendError" class="feedback feedback--error" role="alert">{{ sendError }}</p>
           </ResultPanel>
         </section>
       </div>
