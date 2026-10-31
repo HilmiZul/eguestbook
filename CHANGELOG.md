@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v1.5.0 (31 Oktober 2026)
+
+- Feat: mengaktifkan tombol Kirim untuk mengirim data tamu (nik, nama, alamat, keperluan, foto) ke spreadsheet
+- Feat: menambahkan kolom tanggal pada data yang dikirim dan Apps Script
+- Feat: Apps Script menyimpan foto selfie ke Google Drive dan mencatat tautannya
+- Fix: menyinkronkan status pengiriman dengan tombol Kirim
+- Fix: menambahkan credentials pada request pengiriman untuk mengatasi 401 Unauthorized
+- Feat: menampilkan feedback berhasil terkirim dalam bentuk modal dengan pesan "Berhasil Tersimpan!"
+- Fix: merender modal dan pesan error pengiriman melalui slot default ResultPanel
+- Fix: menghapus referensi `sendStatus` yang sudah tidak ada (penyebab ReferenceError)
+- Perbaikan: modal feedback berhasil terkirim tanpa tombol tutup, menggunakan progress bar countdown 5 detik
+
 ## v1.4.0 (30 Oktober 2026)
 
 - Feat: pratinjau kamera KTP memakai rasio fisik kartu KTP

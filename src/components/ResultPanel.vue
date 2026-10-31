@@ -5,7 +5,18 @@ const props = defineProps({
   result: { type: Object, required: true },
   isScanning: { type: Boolean, default: false },
   error: { type: String, default: '' },
+  isSending: { type: Boolean, default: false },
 })
+
+const emit = defineEmits(['submit'])
+
+/**
+ * Meneruskan permintaan kirim ke parent tanpa memicu pengiriman ganda.
+ */
+function handleSubmit() {
+  if (props.isSending) return
+  emit('submit')
+}
 
 const foundCount = computed(() =>
   ['NIK', 'Nama', 'Alamat'].filter((field) => props.result?.[field]?.trim()).length,
@@ -34,10 +45,20 @@ const statusLabel = computed(() => {
       <slot name="keperluan" />
     </div>
 
-    <!-- Tombol Kirim (belum difungsikan) -->
+    <!-- Tombol Kirim mengirim data tamu ke spreadsheet -->
     <div class="result-panel__submit">
-      <button type="button" class="button">Kirim</button>
+      <button
+        type="button"
+        class="button"
+        :disabled="isSending"
+        @click="handleSubmit"
+      >
+        {{ isSending ? 'Mengirim...' : 'Kirim' }}
+      </button>
     </div>
+
+    <!-- Slot default untuk feedback pengiriman (error/modal) -->
+    <slot />
   </section>
 </template>
 

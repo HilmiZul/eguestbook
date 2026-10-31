@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { SHEETS_API_URL } from './config.js'
 import AppHeader from './components/AppHeader.vue'
 import CameraPanel from './components/CameraPanel.vue'
@@ -28,8 +28,13 @@ const selfiePhoto = ref('')
 
 // Status pengiriman data ke spreadsheet.
 const isSending = ref(false)
-const sendStatus = ref('')
 const sendError = ref('')
+
+// Modal feedback setelah pengiriman berhasil.
+const showSuccessModal = ref(false)
+// Progres countdown modal (0-100).
+const successProgress = ref(0)
+let successTimer = null
 
 /**
  * Menyimpan foto selfie terbaru ke state parent.
@@ -41,10 +46,21 @@ function handleSelfieCapture(photo) {
 }
 
 /**
+ * Menutup modal feedback berhasil.
+ */
+function closeSuccessModal() {
+  if (successTimer) {
+    window.clearTimeout(successTimer)
+    successTimer = null
+  }
+  showSuccessModal.value = false
+  successProgress.value = 0
+}
+
+/**
  * Mengirim data tamu ke Google Sheets lewat Apps Script.
  */
 async function handleSend() {
-  sendStatus.value = ''
   sendError.value = ''
 
   if (!SHEETS_API_URL) {
@@ -56,6 +72,7 @@ async function handleSend() {
 
   try {
     const payload = {
+      tanggal: new Date().toISOString(),
       nik: result.value?.NIK ?? '',
       nama: result.value?.Nama ?? '',
       alamat: result.value?.Alamat ?? '',
@@ -66,14 +83,28 @@ async function handleSend() {
     await fetch(SHEETS_API_URL, {
       method: 'POST',
       mode: 'no-cors',
+      credentials: 'include',
+      redirect: 'follow',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     })
 
-    sendStatus.value = 'Terkirim'
-    window.setTimeout(() => {
-      sendStatus.value = ''
-    }, 2500)
+    // Tampilkan feedback berhasil dalam bentuk modal dengan countdown 5 detik.
+    if (successTimer) {
+      window.clearTimeout(successTimer)
+      successTimer = null
+    }
+    showSuccessModal.value = true
+    successProgress.value = 100
+
+    // Mulai animasi progress bar setelah render.
+    void nextTick(() => {
+      successProgress.value = 0
+    })
+
+    successTimer = window.setTimeout(() => {
+      closeSuccessModal()
+    }, 5000)
   } catch (caughtError) {
     console.error('[Kirim]', caughtError)
     sendError.value = 'Gagal mengirim data. Periksa koneksi atau URL API.'
@@ -134,8 +165,39 @@ async function handleCapture(frame) {
               <KeperluanPanel v-model="keperluan" embedded />
             </template>
 
-            <p v-if="sendStatus" class="feedback" role="status">{{ sendStatus }}</p>
             <p v-if="sendError" class="feedback feedback--error" role="alert">{{ sendError }}</p>
+
+            <Teleport to="body">
+              <div
+                v-if="showSuccessModal"
+                class="success-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="success-modal-title"
+                @click.self="closeSuccessModal"
+              >
+                <div class="success-modal__panel">
+                  <h2 id="success-modal-title" class="success-modal__title">
+                    Berhasil Tersimpan!
+                  </h2>
+
+                  <!-- Progress bar countdown 5 detik -->
+                  <div
+                    class="success-modal__progress"
+                    role="progressbar"
+                    aria-label="Countdown penutupan modal"
+                    :aria-valuenow="successProgress"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    <span
+                      class="success-modal__progress-bar"
+                      :style="{ width: `${successProgress}%` }"
+                    ></span>
+                  </div>
+                </div>
+              </div>
+            </Teleport>
           </ResultPanel>
         </section>
       </div>
@@ -254,5 +316,52 @@ async function handleCapture(frame) {
   .app-shell {
     padding: 1.25rem 0.75rem;
   }
+}
+
+/* Modal feedback berhasil: tengah layar, ukuran medium, border hitam */
+.success-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(10 10 10 / 45%);
+  z-index: 1000;
+}
+
+.success-modal__panel {
+  width: min(24rem, 90vw);
+  padding: 1.5rem;
+  border: 1.5px solid #000;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: none !important;
+  corner-shape: squircle;
+  text-align: center;
+}
+
+.success-modal__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Progress bar countdown modal */
+.success-modal__progress {
+  width: 100%;
+  height: 0.375rem;
+  margin-top: 1.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+}
+
+.success-modal__progress-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-ink);
+  transition: width 5s linear;
 }
 </style>

@@ -21,6 +21,8 @@ form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
   dan Keperluan dari hasil pindai KTP.
 - Hasil scan (NIK, Nama, Alamat) dapat diedit langsung pada panel Hasil.
 - Pilihan keperluan disertakan pada data tamu.
+- Data tamu (tanggal, nik, nama, alamat, keperluan, foto selfie) dapat
+  dikirim ke Google Spreadsheet melalui Web App Google Apps Script.
 - Seluruh pemrosesan gambar berjalan lokal di browser.
 
 ## Teknologi
@@ -31,6 +33,24 @@ form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
 - Tesseract.js untuk OCR.
 - CSS ditulis manual tanpa UI library.
 - Font Open Sans dari @fontsource (disajikan lokal).
+
+## Mengirim Data ke Spreadsheet
+
+1. Buka Google Spreadsheet, buat header kolom: `tanggal, nik, nama, alamat,
+   keperluan, foto`.
+2. Buka **Extensions -> Apps Script**, tempel isi `apps-script/Code.gs`.
+3. Deploy sebagai **Web app** (Execute as: Me, Who has access: Anyone).
+4. Salin URL deployment, lalu isi `SHEETS_API_URL` di `src/config.js`.
+5. Tekan tombol **Kirim** pada panel hasil untuk mengirim data tamu.
+
+### Pemecahan masalah (401 Unauthorized)
+
+Jika pengiriman gagal dengan status 401, pastikan deployment Web App
+Google Apps Script diatur **Who has access: Anyone** (bukan "Anyone with
+Google account"). Setelah mengubah pengaturan, deploy ulang dan perbarui
+`SHEETS_API_URL` di `src/config.js`. Aplikasi juga mengirim kredensial
+Google (`credentials: 'include'`) agar sesi login dapat dipakai bila
+deployment memerlukan akun Google.
 
 ## Menjalankan
 

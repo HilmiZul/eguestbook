@@ -2,7 +2,7 @@
 // dan menyimpannya ke Spreadsheet.
 //
 // Cara pakai:
-// 1. Buka Spreadsheet Anda (kolom: nik, nama, alamat, keperluan, foto).
+// 1. Buka Spreadsheet Anda (kolom: tanggal, nik, nama, alamat, keperluan, foto).
 // 2. Extensions -> Apps Script, lalu tempel isi file ini.
 // 3. Deploy -> New deployment -> Web app:
 //    - Execute as: Me
@@ -17,6 +17,7 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents)
 
+    const tanggal = data.tanggal ? new Date(data.tanggal) : new Date()
     const nik = data.nik || ''
     const nama = data.nama || ''
     const alamat = data.alamat || ''
@@ -40,10 +41,16 @@ function doPost(e) {
     }
 
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
-    sheet.appendRow([nik, nama, alamat, keperluan, fotoUrl])
+
+    // Pastikan baris header tersedia bila sheet masih kosong.
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['tanggal', 'nik', 'nama', 'alamat', 'keperluan', 'foto'])
+    }
+
+    sheet.appendRow([tanggal, nik, nama, alamat, keperluan, fotoUrl])
 
     return ContentService.createTextOutput(
-      JSON.stringify({ status: 'ok' }),
+      JSON.stringify({ status: 'ok', fotoUrl: fotoUrl }),
     ).setMimeType(ContentService.MimeType.JSON)
   } catch (error) {
     return ContentService.createTextOutput(

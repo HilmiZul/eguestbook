@@ -148,4 +148,34 @@
   - kirim data nik , nama, alamat dan keperluan beserta foto selfie nya dikirim ke spreadsheets
   - kirim datanya ke jalur API
   - saya sudah membuat file di spreadsheets memakai akun google dan saya belum membuat Appscript nya dan function nya, bisa di buatkan functionnya
-  - saya membuat kolom di spreadsheets yaitu, nik , nama , alamat , keperluan, foto
+  - saya membuat kolom di spreadsheets yaitu: tanggal, nik, nama, alamat, keperluan, foto
+
+## Bug 1:
+- App.vue:67  POST https://script.google.com/macros/s/AKfycbyzLhnSG5Mu664QclnFlUo1pudiIlFi0_mQ1pZPeK8AhzzEqh_i7OVAj9qzFLbeK8nQ/exec net::ERR_ABORTED 401 (Unauthorized)
+- saat kirim terjadi status code 401 
+
+## UI: feedback berhasil terkirim
+uji sampai lolos baru laporkan
+- tampilkan feedback berhasil dalam bentuk modal 
+- pesan dalam modal: Berhasil Tersimpan!
+- tombol berwarna hitam dengan label tutup, menutup modal
+- Desain: 
+  - ukuran modal medium 
+  - letak tempat ditengah 
+  - border hitam sama seperti panel 
+
+## Bug 2:
+- ResultPanel.vue:18 [Vue warn]: Unhandled error during execution of component event handler 
+  at <ResultPanel result= 
+{NIK: '22222', Nama: 'ywdqy', Alamat: 'hxbqhb'}
+ is-scanning=false error=""  ... > 
+  at <App>
+
+App.vue:56 Uncaught (in promise) ReferenceError: sendStatus is not defined
+    at handleSend (App.vue:56:3)
+    at handleSubmit (ResultPanel.vue:18:3)
+- investigasi dan kerjakan sampai lolos test lalu laporkan penyebab dan apa yang sudah di perbaiki
+
+## Perbaikan: UI feedback berhasil terkirim 
+- hapus tombol tutup, ubah dengan progres bar 
+- modal otomatis diaspear setelah countdown 5 detik 

@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Aplikasi capture KTP dan ekstraksi NIK, Nama, serta Alamat menjadi JSON.",
   "scripts": {
-    "dev": "bunx --bun vite",
+    "zahra": "bunx --bun vite",
     "build": "bunx --bun vite build",
     "preview": "bunx --bun vite preview",
     "test": "bun test"
