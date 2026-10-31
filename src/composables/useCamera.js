@@ -5,7 +5,7 @@
  * cukup memanggil start(), stop(), dan captureFrame().
  */
 
-import { nextTick, onBeforeUnmount, ref, shallowRef } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 
 /**
  * Menerjemahkan error browser menjadi pesan yang bisa dipahami pengguna.
@@ -36,6 +36,10 @@ function getCameraErrorMessage(error) {
 }
 
 /**
+ * @param {{ facingMode?: 'environment' | 'user', preferredDeviceIndex?: number }} [options]
+ *   `environment` untuk kamera belakang (pindai KTP), `user` untuk kamera depan
+ *   (selfie). `preferredDeviceIndex` dipakai saat ada lebih dari satu webcam
+ *   agar panel KTP dan selfie memilih kamera yang berbeda secara otomatis.
  * @returns {{
  *   videoRef: import('vue').Ref<HTMLVideoElement | null>,
  *   isActive: import('vue').Ref<boolean>,
@@ -43,14 +47,24 @@ function getCameraErrorMessage(error) {
  *   isReady: import('vue').Ref<boolean>,
  *   isSupported: boolean,
  *   error: import('vue').Ref<string>,
+ *   devices: import('vue').Ref<MediaDeviceInfo[]>,
+ *   selectedDeviceId: import('vue').Ref<string>,
+ *   refreshDevices: () => Promise<void>,
  *   start: () => Promise<void>,
  *   stop: () => void,
  *   captureFrame: () => HTMLCanvasElement | null,
  * }}
  */
-export function useCamera() {
+export function useCamera(options = {}) {
+  // Kamera depan dipakai untuk selfie, kamera belakang untuk pindai KTP.
+  const facingMode = options.facingMode ?? 'environment'
+  const preferredDeviceIndex = Number.isInteger(options.preferredDeviceIndex)
+    ? options.preferredDeviceIndex
+    : null
   const videoRef = ref(null)
   const stream = shallowRef(null)
+  const devices = ref([])
+  const selectedDeviceId = ref('')
   const isActive = ref(false)
   const isStarting = ref(false)
   const isReady = ref(false)
@@ -62,6 +76,36 @@ export function useCamera() {
 
   // ID permintaan mencegah hasil start() yang sudah basi menimpa stop().
   let requestId = 0
+
+  /**
+   * Memuat daftar kamera yang terhubung. Label perangkat baru terisi
+   * setelah pengguna memberikan izin kamera.
+   */
+  async function refreshDevices() {
+    if (!isSupported || !navigator.mediaDevices?.enumerateDevices) return
+
+    try {
+      const allDevices = await navigator.mediaDevices.enumerateDevices()
+      devices.value = allDevices.filter(
+        (device) => device.kind === 'videoinput' && device.deviceId,
+      )
+    } catch {
+      devices.value = []
+    }
+  }
+
+  /**
+   * Menentukan kamera yang dipakai. Pilihan manual diutamakan, lalu kamera
+   * sesuai urutan perangkat agar dua panel memakai webcam yang berbeda.
+   *
+   * @returns {string}
+   */
+  function resolveDeviceId() {
+    if (selectedDeviceId.value) return selectedDeviceId.value
+    if (preferredDeviceIndex === null) return ''
+
+    return devices.value[preferredDeviceIndex]?.deviceId ?? ''
+  }
 
   /**
    * Menunggu metadata video tersedia sebelum kamera dianggap siap.
@@ -118,14 +162,27 @@ export function useCamera() {
     error.value = ''
 
     try {
+      // Daftar perangkat diperlukan agar dua webcam bisa dipisahkan.
+      await refreshDevices()
+
+      if (currentRequest !== requestId) return
+
+      const deviceId = resolveDeviceId()
+      const videoConstraints = {
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+      }
+
+      if (deviceId) {
+        // deviceId dipakai untuk webcam eksternal yang tidak punya facingMode.
+        videoConstraints.deviceId = { exact: deviceId }
+      } else {
+        videoConstraints.facingMode = { ideal: facingMode }
+      }
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: false,
-        video: {
-          // Utamakan kamera belakang pada perangkat yang memilikinya.
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-        },
+        video: videoConstraints,
       })
 
       // Bila pengguna sudah menekan stop selama izin diminta, buang stream.
@@ -150,6 +207,11 @@ export function useCamera() {
       if (currentRequest !== requestId) return
 
       isReady.value = true
+
+      // Simpan kamera yang benar-benar dipakai agar pilihan di UI sesuai.
+      const activeDeviceId = mediaStream.getVideoTracks()[0]?.getSettings?.().deviceId
+      if (activeDeviceId) selectedDeviceId.value = activeDeviceId
+      await refreshDevices()
 
       // Jika kamera dicabut atau stream berhenti, kembalikan UI ke kondisi awal.
       mediaStream.getVideoTracks().forEach((track) => {
@@ -218,6 +280,7 @@ export function useCamera() {
 
   // Pastikan kamera selalu mati ketika komponen ditinggalkan.
   onBeforeUnmount(stop)
+  onMounted(refreshDevices)
 
   return {
     videoRef,
@@ -226,6 +289,9 @@ export function useCamera() {
     isReady,
     isSupported,
     error,
+    devices,
+    selectedDeviceId,
+    refreshDevices,
     start,
     stop,
     captureFrame,

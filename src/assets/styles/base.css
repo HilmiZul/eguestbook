@@ -28,7 +28,8 @@ body {
 }
 
 button,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -52,8 +53,10 @@ button {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 1.375rem;
-  border: 2px solid #000;
+  min-height: 0;
+  padding: 0.875rem 1rem;
+  overflow: hidden;
+  border: 1.5px solid #000;
   border-radius: var(--radius-xl);
   background: var(--color-surface);
   box-shadow: none !important;
@@ -62,14 +65,49 @@ button {
 
 .panel__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Kelompok kontrol di kanan judul panel */
+.panel__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-left: auto;
+}
+
+/* Pemilih kamera agar dua webcam bisa dipisahkan per panel */
+.camera-picker {
+  display: flex;
+  min-width: 0;
+}
+
+.camera-picker__select {
+  max-width: 10.5rem;
+  padding: 0.25rem 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  color: var(--color-ink-soft);
+  font-size: 0.625rem;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.camera-picker__select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .panel__title {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -77,15 +115,15 @@ button {
 .panel__subtitle {
   margin: 0.125rem 0 0;
   color: var(--color-muted);
-  font-size: 0.75rem;
-  line-height: 1.5;
+  font-size: 0.6875rem;
+  line-height: 1.4;
 }
 
 .panel__hint {
-  margin: 0.75rem 0 0;
+  margin: 0.5rem 0 0;
   color: var(--color-muted);
-  font-size: 0.75rem;
-  line-height: 1.6;
+  font-size: 0.6875rem;
+  line-height: 1.45;
 }
 
 .panel__hint--strong {
@@ -118,14 +156,14 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 3rem;
-  padding: 0 1.25rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
   border: 1px solid var(--color-ink);
   border-radius: var(--radius-xl);
   background: var(--color-ink);
-  box-shadow: none !important; 
+  box-shadow: none !important;
   color: var(--color-page);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   corner-shape: squircle;
@@ -154,24 +192,29 @@ button {
 
 /* Tombol kecil untuk aksi salin di dalam textarea */
 .button--small {
-  min-height: 2.375rem;
-  padding: 0 0.875rem;
+  min-height: 2rem;
+  padding: 0 0.75rem;
   border-radius: var(--radius-xl);
-  /* box-shadow: 0 8px 20px -12px rgb(0 0 0 / 55%); */
   box-shadow: none !important;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
+}
+
+/* Tombol sekunder: outline, untuk aksi pendukung seperti Lengkap */
+.button--secondary {
+  background: var(--color-surface);
+  color: var(--color-ink);
 }
 
 /* Teks status dan pesan kesalahan tetap monokrom */
 .feedback {
-  margin: 0.75rem 0 0;
-  padding: 0.625rem 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.625rem;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
   background: var(--color-surface-muted);
   color: var(--color-ink-soft);
-  font-size: 0.75rem;
-  line-height: 1.55;
+  font-size: 0.6875rem;
+  line-height: 1.45;
 }
 
 .feedback--error {

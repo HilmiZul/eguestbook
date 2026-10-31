@@ -1,14 +1,28 @@
 # Buku Tamu OCR
 
 Aplikasi web untuk menangkap bagian KTP dari kamera webcam, lalu mengubah
-NIK, Nama, dan Alamat menjadi teks JSON langsung di browser.
+NIK, Nama, dan Alamat menjadi teks JSON langsung di browser. Tersedia juga
+form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
 
 ## Fitur
 
-- Pratinjau kamera aktif hanya setelah tombol **Mulai Kamera** ditekan.
+- Layout dua kolom satu layar: kamera KTP dan selfie di kiri, hasil foto dan
+  hasil scan di kanan, tanpa scroll.
+- Layout desktop dioptimalkan untuk Full HD 1920 x 1080 piksel.
+- Kamera KTP dan kamera selfie dapat aktif bersamaan.
+- Pemilih **Kamera** di tiap panel untuk memisahkan dua webcam.
+- Pratinjau kamera KTP memakai rasio fisik kartu KTP (85,6 : 54).
+- Pratinjau kamera aktif hanya setelah tombol **Buka Kamera** ditekan.
 - Capture frame dan OCR memakai Tesseract.js dengan model bahasa Indonesia.
 - Ekstraksi NIK, Nama, dan Alamat dengan toleransi terhadap salah baca umum.
-- Hasil JSON dapat diedit dan disalin lewat tombol **Salin** di dalam textarea.
+- Form opsi **Keperluan** menyatu di bagian bawah panel Hasil.
+- Form **Foto Selfie** memakai kamera depan dan menyimpan hasil foto di browser.
+- Panel **Hasil Foto** menampilkan foto selfie beserta data NIK, Nama, Alamat,
+  dan Keperluan dari hasil pindai KTP.
+- Hasil scan (NIK, Nama, Alamat) dapat diedit langsung pada panel Hasil.
+- Pilihan keperluan disertakan pada data tamu.
+- Data tamu (tanggal, nik, nama, alamat, keperluan, foto selfie) dapat
+  dikirim ke Google Spreadsheet melalui Web App Google Apps Script.
 - Seluruh pemrosesan gambar berjalan lokal di browser.
 
 ## Teknologi
@@ -20,6 +34,24 @@ NIK, Nama, dan Alamat menjadi teks JSON langsung di browser.
 - CSS ditulis manual tanpa UI library.
 - Font Open Sans dari @fontsource (disajikan lokal).
 
+## Mengirim Data ke Spreadsheet
+
+1. Buka Google Spreadsheet, buat header kolom: `tanggal, nik, nama, alamat,
+   keperluan, foto`.
+2. Buka **Extensions -> Apps Script**, tempel isi `apps-script/Code.gs`.
+3. Deploy sebagai **Web app** (Execute as: Me, Who has access: Anyone).
+4. Salin URL deployment, lalu isi `SHEETS_API_URL` di `src/config.js`.
+5. Tekan tombol **Kirim** pada panel hasil untuk mengirim data tamu.
+
+### Pemecahan masalah (401 Unauthorized)
+
+Jika pengiriman gagal dengan status 401, pastikan deployment Web App
+Google Apps Script diatur **Who has access: Anyone** (bukan "Anyone with
+Google account"). Setelah mengubah pengaturan, deploy ulang dan perbarui
+`SHEETS_API_URL` di `src/config.js`. Aplikasi juga mengirim kredensial
+Google (`credentials: 'include'`) agar sesi login dapat dipakai bila
+deployment memerlukan akun Google.
+
 ## Menjalankan
 
 ```bash
@@ -27,7 +59,7 @@ bun install
 bun run dev
 ```
 
-Buka `http://localhost:5173`, tekan **Mulai Kamera**, lalu izinkan akses kamera.
+Buka `http://localhost:5173`, tekan **Buka Kamera**, lalu izinkan akses kamera.
 
 > Kamera hanya dapat diakses melalui `localhost` atau HTTPS. Jika membuka
 > aplikasi dari alamat IP jaringan lokal, gunakan HTTPS agar browser
@@ -53,10 +85,13 @@ src/
 │   └── base.css                # Reset dan komponen bersama
 ├── components/
 │   ├── AppHeader.vue           # Judul aplikasi
-│   ├── CameraPanel.vue         # Pratinjau kamera dan kontrol capture
-│   └── ResultPanel.vue         # Textarea JSON dan tombol salin
+│   ├── CameraPanel.vue         # Pratinjau kamera dan kontrol capture KTP
+│   ├── KeperluanPanel.vue      # Form opsi keperluan di panel hasil
+│   ├── PhotoResultPanel.vue    # Foto selfie dan ringkasan data KTP
+│   ├── ResultPanel.vue         # Textarea JSON, tombol salin, dan keperluan
+│   └── SelfiePanel.vue         # Kamera depan dan kontrol ambil foto
 ├── composables/
-│   ├── useCamera.js            # Izin, stream, dan capture frame
+│   ├── useCamera.js            # Izin, stream, pilihan kamera, dan capture frame
 │   └── useKtpScan.js           # Orkestrasi OCR dua tahap
 ├── services/ktp/
 │   ├── ocrClient.js            # Worker Tesseract yang dipakai ulang
@@ -65,6 +100,22 @@ src/
 └── utils/
     └── clipboard.js            # Clipboard API dan fallback
 ```
+
+## Alur Penggunaan
+
+1. Pilih **Kamera** pada panel **Pindai KTP** di kiri atas, lalu tekan **Buka Kamera**.
+2. Tekan **Pindai KTP**; hasil OCR tampil pada panel **Hasil** di kanan bawah.
+3. Pilih keperluan tamu pada bagian bawah panel **Hasil**.
+4. Pilih **Kamera** lain pada panel **Foto Selfie** di kiri bawah, lalu tekan **Buka Kamera**.
+5. Tekan **Ambil Foto**; panel **Hasil Foto** di kanan atas menampilkan foto tamu
+   beserta data KTP.
+
+Kedua kamera dapat menyala bersamaan sehingga KTP dan selfie bisa diproses
+dalam satu sesi. Bila terdapat dua webcam, pilihan **Kamera otomatis** akan
+memakai perangkat yang berbeda untuk panel KTP dan selfie. Layout desktop
+dioptimalkan untuk 1920 x 1080 piksel dan tetap muat tanpa scroll pada tablet
+maupun layar yang lebih kecil. Pada layar ponsel yang sangat sempit, kolom
+ditumpuk agar tetap dapat digunakan.
 
 ## Cara Kerja OCR
 
@@ -84,7 +135,8 @@ dibutuhkan pada proses OCR pertama.
 - Kualitas hasil bergantung pada pencahayaan, ketajaman kamera, dan posisi KTP.
 - OCR tidak memverifikasi keaslian KTP.
 - Hasil dapat diedit manual untuk mengoreksi salah baca.
-- Gambar dan data tidak disimpan atau dikirim ke mana pun.
+- Gambar KTP dan foto selfie tidak disimpan atau dikirim ke mana pun.
+- Foto selfie hanya berada di memori halaman dan hilang saat halaman dimuat ulang.
 
 ## Kontribusi
 
