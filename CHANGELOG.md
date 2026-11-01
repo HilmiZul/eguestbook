@@ -11,6 +11,15 @@
 - Fix: merender modal dan pesan error pengiriman melalui slot default ResultPanel
 - Fix: menghapus referensi `sendStatus` yang sudah tidak ada (penyebab ReferenceError)
 - Perbaikan: modal feedback berhasil terkirim tanpa tombol tutup, menggunakan progress bar countdown 5 detik
+- Perbaikan 2: animasi progress bar modal feedback berhasil terkirim menggunakan keyframes
+- Perubahan layout 8: layout 2x2, keperluan terpisah, opsi keperluan bertambah (Mengambil ijazah, Rapat orang tua)
+- Revisi 8: tombol kirim disatukan di panel keperluan dengan ukuran penuh seperti tombol scan
+- Revisi 9: input hasil disusun vertikal dan diperlebar, opsi keperluan tidak terpotong, tombol kirim digabung ke panel keperluan
+- Revisi 10: tombol kirim disamakan ukurannya dengan tombol scan, opsi keperluan tanpa scroll
+- Revisi 11: tombol kirim diperlebar penuh, tampilan dirapikan untuk tablet
+- Revisi 12: tombol kirim di panel keperluan dilebarkan penuh (slotted styling)
+- Feat: modal feedback gagal kirim dengan pesan "gagal terkirim, periksa jaringan dan kirim ulang" dan tombol "Siap"
+- Perubahan layout 7: foto hasil di kiri, input nik/nama/alamat di kanan satu baris, keperluan terpisah, tinggi panel disesuaikan
 
 ## v1.4.0 (30 Oktober 2026)
 

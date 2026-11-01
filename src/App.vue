@@ -1,11 +1,10 @@
 <script setup>
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 import { SHEETS_API_URL } from './config.js'
 import AppHeader from './components/AppHeader.vue'
 import CameraPanel from './components/CameraPanel.vue'
 import KeperluanPanel from './components/KeperluanPanel.vue'
 import PhotoResultPanel from './components/PhotoResultPanel.vue'
-import ResultPanel from './components/ResultPanel.vue'
 import SelfiePanel from './components/SelfiePanel.vue'
 import { useKtpScan } from './composables/useKtpScan.js'
 
@@ -32,9 +31,14 @@ const sendError = ref('')
 
 // Modal feedback setelah pengiriman berhasil.
 const showSuccessModal = ref(false)
-// Progres countdown modal (0-100).
-const successProgress = ref(0)
 let successTimer = null
+
+// Modal feedback jika pengiriman gagal.
+const showErrorModal = ref(false)
+
+function closeErrorModal() {
+  showErrorModal.value = false
+}
 
 /**
  * Menyimpan foto selfie terbaru ke state parent.
@@ -54,7 +58,6 @@ function closeSuccessModal() {
     successTimer = null
   }
   showSuccessModal.value = false
-  successProgress.value = 0
 }
 
 /**
@@ -64,7 +67,7 @@ async function handleSend() {
   sendError.value = ''
 
   if (!SHEETS_API_URL) {
-    sendError.value = 'URL API belum diatur. Isi SHEETS_API_URL di src/config.js.'
+    showErrorModal.value = true
     return
   }
 
@@ -95,19 +98,13 @@ async function handleSend() {
       successTimer = null
     }
     showSuccessModal.value = true
-    successProgress.value = 100
-
-    // Mulai animasi progress bar setelah render.
-    void nextTick(() => {
-      successProgress.value = 0
-    })
 
     successTimer = window.setTimeout(() => {
       closeSuccessModal()
     }, 5000)
   } catch (caughtError) {
     console.error('[Kirim]', caughtError)
-    sendError.value = 'Gagal mengirim data. Periksa koneksi atau URL API.'
+    showErrorModal.value = true
   } finally {
     isSending.value = false
   }
@@ -144,64 +141,84 @@ async function handleCapture(frame) {
         />
       </div>
 
-      <!-- Kolom kanan: satu panel penuh berisi hasil foto lalu hasil scan beserta keperluan -->
+      <!-- Kolom kanan: hasil foto di atas, keperluan terpisah di bawah -->
       <div class="workspace__column workspace__column--right">
-        <section class="panel panel--right-column" aria-label="Hasil foto dan hasil scan">
-          <PhotoResultPanel
-            v-model:result="result"
-            :photo="selfiePhoto"
-            :keperluan="keperluan"
-            :notice="notice"
-          />
+        <PhotoResultPanel
+          v-model:result="result"
+          :photo="selfiePhoto"
+          :notice="notice"
+          :error="error"
+        />
 
-          <ResultPanel
-            :result="result"
-            :is-scanning="isScanning"
-            :error="error"
-            :is-sending="isSending"
-            @submit="handleSend"
-          >
-            <template #keperluan>
-              <KeperluanPanel v-model="keperluan" embedded />
-            </template>
-
-            <p v-if="sendError" class="feedback feedback--error" role="alert">{{ sendError }}</p>
-
-            <Teleport to="body">
-              <div
-                v-if="showSuccessModal"
-                class="success-modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="success-modal-title"
-                @click.self="closeSuccessModal"
+        <div class="keperluan-column">
+          <KeperluanPanel v-model="keperluan">
+            <template #submit>
+              <button
+                type="button"
+                class="button keperluan-submit-button"
+                :disabled="isSending"
+                @click="handleSend"
               >
-                <div class="success-modal__panel">
-                  <h2 id="success-modal-title" class="success-modal__title">
-                    Berhasil Tersimpan!
-                  </h2>
-
-                  <!-- Progress bar countdown 5 detik -->
-                  <div
-                    class="success-modal__progress"
-                    role="progressbar"
-                    aria-label="Countdown penutupan modal"
-                    :aria-valuenow="successProgress"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  >
-                    <span
-                      class="success-modal__progress-bar"
-                      :style="{ width: `${successProgress}%` }"
-                    ></span>
-                  </div>
-                </div>
-              </div>
-            </Teleport>
-          </ResultPanel>
-        </section>
+                {{ isSending ? 'Mengirim...' : 'Kirim' }}
+              </button>
+            </template>
+          </KeperluanPanel>
+        </div>
       </div>
     </main>
+
+    <!-- Modal feedback gagal -->
+    <Teleport to="body">
+      <div
+        v-if="showErrorModal"
+        class="error-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="error-modal-title"
+        @click.self="closeErrorModal"
+      >
+        <div class="error-modal__panel">
+          <h2 id="error-modal-title" class="error-modal__title">
+            gagal terkirim, periksa jaringan dan kirim ulang
+          </h2>
+          <button
+            type="button"
+            class="button error-modal__button"
+            @click="closeErrorModal"
+          >
+            Oke
+          </button>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Modal feedback berhasil -->
+    <Teleport to="body">
+      <div
+        v-if="showSuccessModal"
+        class="success-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="success-modal-title"
+        @click.self="closeSuccessModal"
+      >
+        <div class="success-modal__panel">
+          <h2 id="success-modal-title" class="success-modal__title">
+            Berhasil Tersimpan!
+          </h2>
+
+          <div
+            class="success-modal__progress"
+            role="progressbar"
+            aria-label="Countdown penutupan modal"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <span class="success-modal__progress-bar"></span>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -245,13 +262,14 @@ async function handleCapture(frame) {
   min-height: 0;
 }
 
-/* Kolom kanan adalah satu panel penuh yang membentang dua baris */
+/* Kolom kanan memakai dua baris panel yang sejajar dengan kolom kiri */
 .workspace__column--right {
   grid-row: 1 / 3;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.875rem;
   min-width: 0;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 .workspace__column {
@@ -288,9 +306,50 @@ async function handleCapture(frame) {
 }
 
 .panel--right-column > .result-panel {
-  flex: 0 0 auto;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
+}
+
+/* Kolom keperluan: form keperluan di atas, tombol kirim di bawah */
+.keperluan-column {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.keperluan-column > .keperluan-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.keperluan-submit-button {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 2.5rem;
+}
+
+/* Tablet: rapikan jarak dan ukuran agar muat tanpa scroll */
+@media (max-width: 60rem) and (min-width: 40.01rem) {
+  .app-shell {
+    padding: 0.75rem 1rem;
+  }
+
+  .workspace {
+    gap: 0.625rem;
+    margin-top: 0.5rem;
+  }
+
+  .workspace__column--left,
+  .workspace__column--right {
+    gap: 0.625rem;
+  }
+
+  .panel {
+    padding: 0.75rem 0.875rem;
+  }
 }
 
 /* Di ponsel kolom ditumpuk; tablet dan desktop tetap satu layar tanpa scroll */
@@ -360,8 +419,53 @@ async function handleCapture(frame) {
 .success-modal__progress-bar {
   display: block;
   height: 100%;
+  width: 100%;
   border-radius: inherit;
   background: var(--color-ink);
-  transition: width 5s linear;
+  animation: success-progress 5s linear forwards;
+}
+
+@keyframes success-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Modal feedback gagal */
+.error-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(10 10 10 / 45%);
+  z-index: 1000;
+}
+
+.error-modal__panel {
+  width: min(24rem, 90vw);
+  padding: 1.5rem;
+  border: 1.5px solid #000;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: none !important;
+  corner-shape: squircle;
+  text-align: center;
+}
+
+.error-modal__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.error-modal__button {
+  margin-top: 1.25rem;
+  width: 100%;
 }
 </style>

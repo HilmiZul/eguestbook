@@ -20,6 +20,14 @@ const options = [
     value: 'Kegiatan Workshop',
     description: 'Kunjungan untuk mengikuti atau mendampingi workshop.',
   },
+  {
+    value: 'Mengambil ijazah',
+    description: 'Kunjungan untuk mengambil ijazah siswa.',
+  },
+  {
+    value: 'Rapat orang tua',
+    description: 'Kunjungan untuk mengikuti rapat orang tua.',
+  },
 ]
 
 const statusLabel = computed(() => (props.modelValue ? 'Dipilih' : 'Belum dipilih'))
@@ -81,7 +89,12 @@ function selectOption(value) {
       </label>
     </div>
 
-    <p v-if="!embedded" class="panel__hint">Pilihan keperluan akan disertakan pada hasil JSON.</p>
+    <p v-if="!embedded" class="panel__hint">Pilih Keperluan Anda</p>
+
+    <!-- Slot tombol kirim (digabungkan ke dalam panel) -->
+    <div class="keperluan-panel__submit">
+      <slot name="submit" />
+    </div>
   </section>
 </template>
 
@@ -142,6 +155,10 @@ function selectOption(value) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   margin-top: 1.125rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  align-content: start;
 }
 
 /* Kartu opsi besar: seluruh area kartu dapat diklik */
@@ -150,8 +167,8 @@ function selectOption(value) {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  min-height: 7.5rem;
-  padding: 1.125rem;
+  min-height: 4.75rem;
+  padding: 0.75rem;
   border: 1.5px solid var(--color-line);
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
@@ -234,12 +251,32 @@ function selectOption(value) {
 
 .keperluan-option__description {
   color: var(--color-muted);
-  font-size: 0.6875rem;
-  line-height: 1.6;
+  font-size: 0.625rem;
+  line-height: 1.5;
 }
 
 .keperluan-option--selected .keperluan-option__description {
   color: rgb(255 255 255 / 72%);
+}
+
+/* Tombol kirim yang digabungkan ke dalam panel */
+.keperluan-panel__submit {
+  flex: none;
+  display: flex;
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.keperluan-panel__submit :slotted(.button) {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 2.5rem;
+}
+
+.keperluan-panel__submit .button {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 2.5rem;
 }
 
 /* Di layar sempit opsi ditumpuk agar teks tetap nyaman dibaca */
@@ -249,7 +286,7 @@ function selectOption(value) {
   }
 
   .keperluan-option {
-    min-height: 6rem;
+    min-height: 5rem;
   }
 }
 </style>

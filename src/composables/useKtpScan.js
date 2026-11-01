@@ -102,7 +102,7 @@ export function useKtpScan() {
     const foundCount = countKtpFields(fields)
 
     if (foundCount === 3) {
-      return 'NIK, Nama, dan Alamat berhasil terbaca. Periksa kembali sebelum menyalin.'
+      return 'NIK, Nama, dan Alamat berhasil terbaca. Periksa kembali sebelum Dikirim.'
     }
 
     if (foundCount > 0) {

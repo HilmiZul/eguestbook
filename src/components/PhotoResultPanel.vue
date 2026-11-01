@@ -9,6 +9,8 @@ const props = defineProps({
   keperluan: { type: String, default: '' },
   // Pesan hasil pemindaian (termasuk peringatan field yang belum terbaca).
   notice: { type: String, default: '' },
+  // Pesan kesalahan pemindaian KTP.
+  error: { type: String, default: '' },
 })
 
 const emit = defineEmits(['update:result'])
@@ -44,29 +46,25 @@ function emitUpdate() {
 <template>
   <section class="panel photo-result-panel" aria-labelledby="photo-result-panel-title">
     <header class="panel__header">
-      <h2 id="photo-result-panel-title" class="panel__title">Hasil Foto</h2>
+      <h2 id="photo-result-panel-title" class="panel__title">Hasil</h2>
 
       <span class="status-pill" :class="{ 'status-pill--active': photo }">
         {{ statusLabel }}
       </span>
     </header>
 
-    <div class="photo-result-panel__preview">
-      <img v-if="photo" :src="photo" alt="Foto tamu hasil selfie" />
+    <!-- Foto di kiri, input data di kanan (satu baris sejajar) -->
+    <div class="photo-result-panel__body">
+      <div class="photo-result-panel__preview">
+        <img v-if="photo" :src="photo" alt="Foto tamu hasil selfie" />
 
-      <!-- Tampilan sebelum foto selfie diambil -->
-      <div v-else class="photo-result-panel__empty">
-        <p class="photo-result-panel__empty-title">Belum ada foto</p>
+        <!-- Tampilan sebelum foto selfie diambil -->
+        <div v-else class="photo-result-panel__empty">
+          <p class="photo-result-panel__empty-title">Belum ada foto</p>
+        </div>
       </div>
-    </div>
 
-    <p v-if="notice" class="photo-result-panel__notice" role="status">
-      {{ notice }}
-    </p>
-
-    <!-- Data hasil scan (selalu tampil agar layout konsisten) -->
-    <div class="photo-result-panel__fields">
-      <div class="photo-result-panel__fields-left">
+      <div class="photo-result-panel__fields">
         <label class="photo-result-panel__field">
           <span class="photo-result-panel__label">NIK</span>
           <input
@@ -91,24 +89,26 @@ function emitUpdate() {
             @input="emitUpdate"
           />
         </label>
-      </div>
 
-      <label class="photo-result-panel__field photo-result-panel__field--alamat">
-        <span class="photo-result-panel__label">Alamat</span>
-        <textarea
-          v-model="localResult.Alamat"
-          class="photo-result-panel__textarea"
-          rows="3"
-          autocomplete="off"
-          spellcheck="false"
-          @input="emitUpdate"
-        ></textarea>
-      </label>
+        <label class="photo-result-panel__field photo-result-panel__field--alamat">
+          <span class="photo-result-panel__label">Alamat</span>
+          <textarea
+            v-model="localResult.Alamat"
+            class="photo-result-panel__textarea"
+            rows="2"
+            autocomplete="off"
+            spellcheck="false"
+            @input="emitUpdate"
+          ></textarea>
+        </label>
+      </div>
     </div>
 
-    <p v-if="keperluan" class="photo-result-panel__keperluan">
-      Keperluan: {{ keperluan }}
+    <p v-if="notice" class="photo-result-panel__notice" role="status">
+      {{ notice }}
     </p>
+
+    <p v-if="error" class="feedback feedback--error" role="alert">{{ error }}</p>
   </section>
 </template>
 
@@ -121,12 +121,22 @@ function emitUpdate() {
   flex-direction: column;
 }
 
-/* Bingkai foto mengisi sisa tinggi panel */
-.photo-result-panel__preview {
-  position: relative;
+/* Foto di kiri, input di kanan dalam satu baris */
+.photo-result-panel__body {
   flex: 1 1 auto;
   min-height: 0;
+  display: flex;
+  gap: 0.625rem;
   margin-top: 0.625rem;
+  align-items: stretch;
+}
+
+/* Bingkai foto mengisi kolom kiri */
+.photo-result-panel__preview {
+  position: relative;
+  flex: 0 0 36%;
+  min-width: 0;
+  min-height: 0;
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
@@ -155,34 +165,15 @@ function emitUpdate() {
   font-weight: 600;
 }
 
-/* Pesan hasil pemindaian dipindah ke bawah foto */
-.photo-result-panel__notice {
-  flex: none;
-  margin: 0.5rem 0 0;
-  padding: 0.375rem 0.5rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-muted);
-  color: var(--color-ink-soft);
-  font-size: 0.6875rem;
-  line-height: 1.4;
-}
-
-/* Field hasil scan: NIK dan Nama di kiri, Alamat (textarea) di kanan */
+/* Input nik, nama, alamat sejajar dalam satu baris */
 .photo-result-panel__fields {
-  flex: none;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-  gap: 0.5rem;
-  margin-top: 0.625rem;
-  align-items: start;
-}
-
-.photo-result-panel__fields-left {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex: 1 1 auto;
   min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  align-items: start;
+  overflow: auto;
 }
 
 .photo-result-panel__field {
@@ -240,10 +231,15 @@ function emitUpdate() {
   box-shadow: 0 0 0 3px rgb(10 10 10 / 6%);
 }
 
-.photo-result-panel__keperluan {
+/* Pesan hasil pemindaian dipindah ke bawah foto */
+.photo-result-panel__notice {
   flex: none;
-  margin-top: 0.5rem;
-  color: var(--color-muted);
+  margin: 0.5rem 0 0;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-ink-soft);
   font-size: 0.6875rem;
   line-height: 1.4;
 }
@@ -251,6 +247,19 @@ function emitUpdate() {
 @media (max-width: 30rem) {
   .photo-result-panel__input {
     font-size: 0.6875rem;
+  }
+
+  .photo-result-panel__body {
+    flex-direction: column;
+  }
+
+  .photo-result-panel__preview {
+    flex: 0 0 auto;
+    height: 10rem;
+  }
+
+  .photo-result-panel__fields {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

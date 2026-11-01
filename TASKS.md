@@ -179,3 +179,74 @@ App.vue:56 Uncaught (in promise) ReferenceError: sendStatus is not defined
 ## Perbaikan: UI feedback berhasil terkirim 
 - hapus tombol tutup, ubah dengan progres bar 
 - modal otomatis diaspear setelah countdown 5 detik 
+test sampai lulus 
+commit dan update changelog kalau sudah lulus test
+
+## Perbaikan 2: progres bar feedback 
+- buatkan animasi progres bar feedback modal berhasil terkirim 
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## menambahkan: UI feedback jika gagal
+- gagal kirim atau koneksi tidak stabil tampilkan modal dengan " gagal terkirim, periksa jaringan dan kirim ulang"
+pakai tombol siap 
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## Perubahan layout 7
+- posisi hasil foto itu pindahkan di sebelah kiri
+- posisi input: nik, nama, alamat pindahkan di sebelah kanan 1 baris sejajar 
+- form keperluan pisahkan dengan form hasil foto dan scan ktp 
+- form hasil dan form keperluan sesuaikan tinggi dan lebar nya seperti pindah ktp dan foto selfie 
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## Perubahan layout 8 
+- ganti layout form posisikan seperti layouts3.png 
+- Pisahkan form keperluan tidak menyatu dalam 1 panel
+- pisah form hasil dengan form keperluan 
+- posisi form hasil di kanan atas sejajarkan dengan scan ktp
+- posisi form keperluan di kanan bawah sejajarkan dengan foto selfie
+- inputan dari nik sampai alamat itu di urutkan samakan dengan layouts3.png 
+- Fitur: Opsi Keperluan 2 
+  - opsi 1: menjemput siswa 
+  - opsi 2: kegiatan workshop 
+  - opsi 3: Mengambil ijazah 
+  - opsi 4: Rapat orang tua
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## revisi 8
+- inputan nik sampai alamat sesuaikan yang ada di file layouts3.png 
+- lalu tombol kirim disatukan di panel keperluan di simpan di bawahnya 
+- ukuran tombol kirim di panel keperluan samakan panjang dan lebarnya seperti tombol button scan 
+- layout nya harus sama persis seperti di file layouts3.png
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## revisi 9 
+- di panel hasil kolom nik sampai alamat lebarkan dan posisi atas tengah dan bawah
+- di panel keperluan opsi 3 dan 4 jangan kepotong oleh panel, sesuaikan agar tidak terpotong 
+- tombol kirim gabungkan ke dalam panel keperluan 
+- ubah itu samakan dengan form yang ada di file layouts3.png
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## revisi 10 
+- tombol button kirim di panel keperluan samakan lebar dan tingginya seperti di tombol button scan ktp
+- dan opsi keperluan opsi opsi itu jangan ada scrolll
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## revisi 11 
+- tombol button di panel keperluan masih di sisi tombol kiri, harusnya di lebarkan tombol button kirim di panel keperluan 
+- responsif kan ketika layar di ukuran tablet dan rapih
+- tombol button di panel keperluan samakan yang di tombol button yang di panel scan ktp 
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
+
+## revisi 12: tombol kirim di panel keperluan 
+- check di file keperluan.png dia tombolnya masih di kiri ubah width nya jadi lebarkan 
+- tombol button kirim masih di posisi di kiri, saya ingin posisinya di lebarkan 
+- test sampai lulus 
+- commit dan update changelog kalau sudah lulus test
