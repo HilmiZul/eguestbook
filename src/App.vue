@@ -127,6 +127,18 @@ async function handleSend() {
 async function handleCapture(frame) {
   await scan(frame)
 }
+
+// Ekspos fungsi yang dibutuhkan oleh pengujian dan komponen induk.
+defineExpose({
+  handleSend,
+  result,
+  keperluan,
+  selfiePhoto,
+  showSuccessModal,
+  showErrorModal,
+  closeSuccessModal,
+  closeErrorModal,
+})
 </script>
 
 <template>
