@@ -7,6 +7,7 @@ import KeperluanPanel from './components/KeperluanPanel.vue'
 import PhotoResultPanel from './components/PhotoResultPanel.vue'
 import SelfiePanel from './components/SelfiePanel.vue'
 import { useKtpScan } from './composables/useKtpScan.js'
+import { createEmptyKtpFields } from './services/ktp/parseKtp.js'
 
 // State OCR dan fungsi pemindaian dipisahkan dari komponen tampilan.
 const {
@@ -81,16 +82,23 @@ async function handleSend() {
       alamat: result.value?.Alamat ?? '',
       keperluan: keperluan.value ?? '',
       foto: selfiePhoto.value ? selfiePhoto.value.split(',')[1] ?? '' : '',
-    }
+    }  
 
     await fetch(SHEETS_API_URL, {
       method: 'POST',
       mode: 'no-cors',
       credentials: 'include',
+   
       redirect: 'follow',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     })
+    // Validasi setelah kirim berhasil: kosongkan form result NIK, Nama, dan Alamat.
+    result.value = createEmptyKtpFields()
+    keperluan.value = ''
+    selfiePhoto.value = ''
+
+
 
     // Tampilkan feedback berhasil dalam bentuk modal dengan countdown 5 detik.
     if (successTimer) {
@@ -156,7 +164,7 @@ async function handleCapture(frame) {
               <button
                 type="button"
                 class="button keperluan-submit-button"
-                :disabled="isSending"
+                :disabled="isSending || !keperluan || !result.NIK || !result.Nama || !result.Alamat || !selfiePhoto"
                 @click="handleSend"
               >
                 {{ isSending ? 'Mengirim...' : 'Kirim' }}
@@ -179,7 +187,8 @@ async function handleCapture(frame) {
       >
         <div class="error-modal__panel">
           <h2 id="error-modal-title" class="error-modal__title">
-            gagal terkirim, periksa jaringan dan kirim ulang
+            Gagal Terkirim! <br />
+            <span class="text-muted small">Periksa jaringan dan kirim ulang!</span>
           </h2>
           <button
             type="button"
@@ -467,5 +476,14 @@ async function handleCapture(frame) {
 .error-modal__button {
   margin-top: 1.25rem;
   width: 100%;
+}
+
+.text-muted {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.small {
+  font-size: 0.9rem;
 }
 </style>

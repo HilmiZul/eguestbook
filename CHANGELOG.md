@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.1 (04 November 2026)
+
+- Fix: mengosongkan form result NIK, Nama, dan Alamat setelah pengiriman berhasil
+- Fix: memperbarui state result dengan objek baru agar input pada panel hasil ikut terkosongkan
+
 ## v1.5.0 (31 Oktober 2026)
 
 - Feat: mengaktifkan tombol Kirim untuk mengirim data tamu (nik, nama, alamat, keperluan, foto) ke spreadsheet
