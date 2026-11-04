@@ -6,7 +6,12 @@ const props = defineProps({
   modelValue: { type: String, default: '' },
   // Mode embedded dipakai saat form digabung ke dalam panel hasil KTP.
   embedded: { type: Boolean, default: false },
+  // Menonaktifkan seluruh opsi saat proses kirim berlangsung.
+  disabled: { type: Boolean, default: false },
+  isSending: { type: Boolean, default: false },
 })
+
+const isDisabled = computed(() => props.disabled || props.isSending)
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -14,19 +19,21 @@ const emit = defineEmits(['update:modelValue'])
 const options = [
   {
     value: 'Menjemput Siswa',
-    description: 'Kunjungan untuk menjemput siswa di sekolah.',
+  },
+  {
+    value: 'Mengambil Rapor',
+  },
+  {
+    value: 'Mengambil Ijazah',
+  },
+  {
+    value: 'Rapat Orang Tua',
   },
   {
     value: 'Kegiatan Workshop',
-    description: 'Kunjungan untuk mengikuti atau mendampingi workshop.',
   },
   {
-    value: 'Mengambil ijazah',
-    description: 'Kunjungan untuk mengambil ijazah siswa.',
-  },
-  {
-    value: 'Rapat orang tua',
-    description: 'Kunjungan untuk mengikuti rapat orang tua.',
+    value: 'Kedinasan/Kemasyarakatan',
   },
 ]
 
@@ -38,6 +45,7 @@ const statusLabel = computed(() => (props.modelValue ? 'Dipilih' : 'Belum dipili
  * @param {string} value
  */
 function selectOption(value) {
+  if (isDisabled.value) return
   emit('update:modelValue', value)
 }
 </script>
@@ -74,6 +82,7 @@ function selectOption(value) {
           name="keperluan"
           :value="option.value"
           :checked="modelValue === option.value"
+          :disabled="isDisabled"
           @change="selectOption(option.value)"
         />
 
@@ -86,7 +95,6 @@ function selectOption(value) {
       </label>
     </div>
 
-    <p v-if="!embedded" class="panel__hint">Pilih Keperluan Anda</p>
 
     <!-- Slot tombol kirim (digabungkan ke dalam panel) -->
     <div class="keperluan-panel__submit">
@@ -154,7 +162,7 @@ function selectOption(value) {
   margin-top: 1.125rem;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
   align-content: start;
 }
 
@@ -164,7 +172,7 @@ function selectOption(value) {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  min-height: 4.75rem;
+  /* min-height: 4.75rem; */
   padding: 0.75rem;
   border: 1.5px solid var(--color-line);
   border-radius: var(--radius-lg);
@@ -236,7 +244,7 @@ function selectOption(value) {
 }
 
 .keperluan-option__title {
-  font-size: 0.875rem;
+  font-size: 1vw;
   font-weight: 600;
   line-height: 1.4;
 }

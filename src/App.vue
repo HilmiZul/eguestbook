@@ -152,11 +152,15 @@ defineExpose({
           :is-scanning="isScanning"
           :scan-progress="progress"
           :scan-status="statusMessage"
+          :disabled="isSending"
+          :is-sending="isSending"
           @capture="handleCapture"
         />
 
         <SelfiePanel
           :has-photo="Boolean(selfiePhoto)"
+          :disabled="isSending"
+          :is-sending="isSending"
           @captured="handleSelfieCapture"
         />
       </div>
@@ -168,10 +172,12 @@ defineExpose({
           :photo="selfiePhoto"
           :notice="notice"
           :error="error"
+          :disabled="isSending"
+          :is-sending="isSending"
         />
 
         <div class="keperluan-column">
-          <KeperluanPanel v-model="keperluan">
+          <KeperluanPanel v-model="keperluan" :disabled="isSending" :is-sending="isSending">
             <template #submit>
               <button
                 type="button"

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.2 (04 November 2026)
+
+- Fix: menonaktifkan semua tombol dan input form saat proses kirim berlangsung
+- Fix: mengaktifkan kembali kontrol setelah kirim berhasil atau gagal
+
 ## v1.5.1 (04 November 2026)
 
 - Fix: mengosongkan form result NIK, Nama, dan Alamat setelah pengiriman berhasil

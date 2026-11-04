@@ -256,3 +256,10 @@ pakai tombol siap
 - Kosong form result NIK, Nama dan Alamat apabila success/berhasil
 - test sampai passed
 - commit dan update changelog kalau test passed
+
+## Update 2: Validasi saat proses mengirim
+
+- Disable semua tombol dan form input tanpa terkecuali
+- Aktifkan kembali saat proses kirim berhasil/gagal
+- test sampai passed
+- commit dan update changelog kalau test passed

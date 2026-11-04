@@ -1,10 +1,16 @@
 <script setup>
+import { computed } from 'vue'
 import { useCamera } from '../composables/useCamera.js'
 
-defineProps({
+const props = defineProps({
   // Status foto disimpan di parent agar panel hasil foto bisa menampilkannya.
   hasPhoto: { type: Boolean, default: false },
+  // Menonaktifkan seluruh kontrol saat proses kirim berlangsung.
+  disabled: { type: Boolean, default: false },
+  isSending: { type: Boolean, default: false },
 })
+
+const isDisabled = computed(() => props.disabled || props.isSending)
 
 const emit = defineEmits(['captured'])
 
@@ -28,7 +34,7 @@ const {
  * lalu mengirim data URL ke parent.
  */
 function handleCapture() {
-  if (!isReady.value) return
+  if (isDisabled.value || !isReady.value) return
 
   const frame = captureFrame()
   if (!frame) return
@@ -61,7 +67,7 @@ function handleCapture() {
           <select
             v-model="selectedDeviceId"
             class="camera-picker__select"
-            :disabled="isActive || isStarting"
+            :disabled="isActive || isStarting || isDisabled"
           >
             <option value="">Kamera otomatis</option>
             <option
@@ -116,12 +122,17 @@ function handleCapture() {
         <button
           type="button"
           class="button camera-controls__primary"
-          :disabled="!isReady"
+          :disabled="!isReady || isDisabled"
           @click="handleCapture"
         >
           Ambil Foto
         </button>
-        <button type="button" class="button camera-controls__secondary" @click="stop">
+        <button
+          type="button"
+          class="button camera-controls__secondary"
+          :disabled="isDisabled"
+          @click="stop"
+        >
           Hentikan
         </button>
       </template>

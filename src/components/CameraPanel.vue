@@ -1,11 +1,17 @@
 <script setup>
+import { computed } from 'vue'
 import { useCamera } from '../composables/useCamera.js'
 
 const props = defineProps({
   isScanning: { type: Boolean, default: false },
   scanProgress: { type: Number, default: 0 },
   scanStatus: { type: String, default: '' },
+  // Menonaktifkan seluruh kontrol saat proses kirim berlangsung.
+  disabled: { type: Boolean, default: false },
+  isSending: { type: Boolean, default: false },
 })
+
+const isDisabled = computed(() => props.disabled || props.isSending)
 
 const emit = defineEmits(['capture'])
 
@@ -29,7 +35,7 @@ const {
  * Mengambil frame lalu mengirimkannya ke parent untuk diproses OCR.
  */
 function handleCapture() {
-  if (!isReady.value || props.isScanning) return
+  if (isDisabled.value || !isReady.value || props.isScanning) return
 
   const frame = captureFrame()
   if (frame) emit('capture', frame)
@@ -47,7 +53,7 @@ function handleCapture() {
           <select
             v-model="selectedDeviceId"
             class="camera-picker__select"
-            :disabled="isActive || isStarting"
+            :disabled="isActive || isStarting || isDisabled"
           >
             <option value="">Kamera otomatis</option>
             <option
@@ -105,7 +111,7 @@ function handleCapture() {
         v-if="!isActive"
         type="button"
         class="button camera-controls__primary"
-        :disabled="isStarting || !isSupported"
+        :disabled="isStarting || !isSupported || isDisabled"
         @click="start"
       >
         {{ isStarting ? 'Menyiapkan...' : 'Buka Kamera' }}
@@ -116,7 +122,7 @@ function handleCapture() {
         <button
           type="button"
           class="button camera-controls__primary"
-          :disabled="!isReady || isScanning"
+          :disabled="!isReady || isScanning || isDisabled"
           @click="handleCapture"
         >
           {{ isScanning ? 'Membaca...' : 'Pindai KTP' }}
@@ -124,7 +130,7 @@ function handleCapture() {
         <button
           type="button"
           class="button camera-controls__secondary"
-          :disabled="isScanning"
+          :disabled="isScanning || isDisabled"
           @click="stop"
         >
           Hentikan

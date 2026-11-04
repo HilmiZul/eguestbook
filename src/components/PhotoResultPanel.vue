@@ -11,7 +11,12 @@ const props = defineProps({
   notice: { type: String, default: '' },
   // Pesan kesalahan pemindaian KTP.
   error: { type: String, default: '' },
+  // Menonaktifkan seluruh input saat proses kirim berlangsung.
+  disabled: { type: Boolean, default: false },
+  isSending: { type: Boolean, default: false },
 })
+
+const isDisabled = computed(() => props.disabled || props.isSending)
 
 const emit = defineEmits(['update:result'])
 
@@ -74,6 +79,7 @@ function emitUpdate() {
             inputmode="numeric"
             autocomplete="off"
             spellcheck="false"
+            :disabled="isDisabled"
             @input="emitUpdate"
           />
         </label>
@@ -86,6 +92,7 @@ function emitUpdate() {
             type="text"
             autocomplete="off"
             spellcheck="false"
+            :disabled="isDisabled"
             @input="emitUpdate"
           />
         </label>
@@ -98,6 +105,7 @@ function emitUpdate() {
             rows="2"
             autocomplete="off"
             spellcheck="false"
+            :disabled="isDisabled"
             @input="emitUpdate"
           ></textarea>
         </label>
