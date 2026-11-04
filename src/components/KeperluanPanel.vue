@@ -82,9 +82,6 @@ function selectOption(value) {
 
         <span class="keperluan-option__body">
           <span class="keperluan-option__title">{{ option.value }}</span>
-          <span v-if="!embedded" class="keperluan-option__description">
-            {{ option.description }}
-          </span>
         </span>
       </label>
     </div>
@@ -183,14 +180,9 @@ function selectOption(value) {
 
 .keperluan-option:hover {
   border-color: var(--color-ink);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
 }
 
-/* Fokus keyboard mengikuti seluruh kartu, bukan hanya input tersembunyi */
-.keperluan-option:focus-within {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 3px;
-}
 
 /* Opsi terpilih memakai latar hitam agar kontras dan mudah dikenali */
 .keperluan-option--selected {

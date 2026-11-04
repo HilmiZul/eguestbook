@@ -250,3 +250,9 @@ pakai tombol siap
 - tombol button kirim masih di posisi di kiri, saya ingin posisinya di lebarkan 
 - test sampai lulus 
 - commit dan update changelog kalau sudah lulus test
+
+## Update 1: Validasi setelah kirim berhasil
+
+- Kosong form result NIK, Nama dan Alamat apabila success/berhasil
+- test sampai passed
+- commit dan update changelog kalau test passed
