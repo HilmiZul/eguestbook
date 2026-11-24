@@ -1,12 +1,14 @@
 <script setup>
 import { computed } from 'vue'
 import { useCamera } from '../composables/useCamera.js'
-import { ref, watch } from 'vue'
 
 const props = defineProps({
   isScanning: { type: Boolean, default: false },
   scanProgress: { type: Number, default: 0 },
   scanStatus: { type: String, default: '' },
+  // Status foto disimpan di parent agar pratinjau dapat menampilkannya.
+  hasPhoto: { type: Boolean, default: false },
+  photo: { type: String, default: '' },
   // Menonaktifkan seluruh kontrol saat proses kirim berlangsung.
   disabled: { type: Boolean, default: false },
   isSending: { type: Boolean, default: false },
@@ -14,7 +16,7 @@ const props = defineProps({
 
 const isDisabled = computed(() => props.disabled || props.isSending)
 
-const emit = defineEmits(['capture'])
+const emit = defineEmits(['capture', 'captured'])
 
 // Seluruh logika kamera diisolasi di composable agar komponen ini fokus
 // pada tampilan dan interaksi pengguna.
@@ -33,33 +35,26 @@ const {
 } = useCamera({ facingMode: 'environment', preferredDeviceIndex: 0 })
 
 /**
- * Mengambil frame lalu mengirimkannya ke parent untuk diproses OCR.
+ * Mengambil foto KTP, lalu menjalankan OCR secara otomatis.
  */
-// Penanda agar auto-scan hanya berjalan sekali per sesi kamera.
-const autoScanned = ref(false)
-
 function handleCapture() {
   if (isDisabled.value || !isReady.value || props.isScanning) return
 
   const frame = captureFrame()
-  if (frame) emit('capture', frame)
+  if (!frame) return
+
+  const canvas = document.createElement('canvas')
+  canvas.width = frame.width
+  canvas.height = frame.height
+
+  const context = canvas.getContext('2d')
+  if (!context) return
+
+  context.drawImage(frame, 0, 0)
+  emit('captured', canvas.toDataURL('image/jpeg', 0.9))
+  emit('capture', frame)
+  stop()
 }
-
-// Auto-scan: setelah kamera siap, ambil frame otomatis lalu proses OCR.
-watch(isReady, (ready) => {
-  if (!ready || autoScanned.value || props.isScanning || isDisabled.value) return
-  autoScanned.value = true
-  window.setTimeout(() => {
-    if (isReady.value && !props.isScanning && !isDisabled.value) {
-      handleCapture()
-    }
-  }, 1500)
-})
-
-// Reset penanda saat kamera dimatikan agar auto-scan bisa berulang.
-watch(isActive, (active) => {
-  if (!active) autoScanned.value = false
-})
 </script>
 
 <template>
@@ -101,7 +96,13 @@ watch(isActive, (active) => {
 
         <!-- Tampilan awal sebelum kamera dinyalakan -->
         <div v-if="!isActive" class="camera-stage__empty">
-          <p class="camera-stage__empty-title">Kamera belum aktif</p>
+          <img
+            v-if="hasPhoto && photo"
+            :src="photo"
+            alt="Foto KTP hasil capture"
+            class="camera-stage__photo"
+          />
+          <p v-else class="camera-stage__empty-title">Kamera belum aktif</p>
         </div>
 
         <!-- Panduan bingkai kartu; hanya tampil saat kamera aktif -->
@@ -227,6 +228,13 @@ watch(isActive, (active) => {
   margin: 0;
   font-size: 0.8125rem;
   font-weight: 600;
+}
+
+.camera-stage__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* Bingkai panduan mengikuti proporsi kartu KTP */

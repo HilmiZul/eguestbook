@@ -26,6 +26,9 @@ const keperluan = ref('')
 // Foto selfie disimpan sebagai data URL agar bisa ditampilkan di panel hasil foto.
 const selfiePhoto = ref('')
 
+// Foto KTP hasil capture (tidak disimpan/dikirim ke spreadsheet).
+const ktpPhoto = ref('')
+
 // Status pengiriman data ke spreadsheet.
 const isSending = ref(false)
 const sendError = ref('')
@@ -48,6 +51,14 @@ function closeErrorModal() {
  */
 function handleSelfieCapture(photo) {
   selfiePhoto.value = photo
+}
+
+/**
+ * Menyimpan foto KTP hasil capture (hanya tampilan, tidak dikirim).
+ * @param {string} photo
+ */
+function handleKtpCapture(photo) {
+  ktpPhoto.value = photo
 }
 
 /**
@@ -155,7 +166,10 @@ defineExpose({
           :scan-status="statusMessage"
           :disabled="isSending"
           :is-sending="isSending"
+          :has-photo="Boolean(ktpPhoto)"
+          :photo="ktpPhoto"
           @capture="handleCapture"
+          @captured="handleKtpCapture"
         />
 
         <SelfiePanel
