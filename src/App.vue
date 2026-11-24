@@ -105,10 +105,13 @@ async function handleSend() {
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     })
-    // Validasi setelah kirim berhasil: kosongkan form result NIK, Nama, dan Alamat.
+    // Validasi setelah kirim berhasil: kosongkan form result, foto, dan keperluan.
     result.value = createEmptyKtpFields()
     keperluan.value = ''
     selfiePhoto.value = ''
+    ktpPhoto.value = ''
+    notice.value = ''
+    error.value = ''
 
 
 
