@@ -145,7 +145,7 @@ watch(isActive, (active) => {
           :disabled="!isReady || isScanning || isDisabled"
           @click="handleCapture"
         >
-          {{ isScanning ? 'Membaca...' : 'Pindai KTP' }}
+          {{ isScanning ? 'Membaca...' : 'Ambil Foto KTP' }}
         </button>
         <button
           type="button"
