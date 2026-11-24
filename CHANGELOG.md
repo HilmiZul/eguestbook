@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.4 (24 November 2026)
+
+- Feat: kustom library akurasi KTP (ktpAccuracy) dan pembersihan teks OCR
+- Feat: peningkatan akurasi NIK, Nama, dan Alamat (uppercase normalisasi)
+
 ## v1.5.3 (24 November 2026)
 
 - Feat: kamera KTP memindai otomatis setelah kamera siap
