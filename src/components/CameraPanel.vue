@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useCamera } from '../composables/useCamera.js'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   isScanning: { type: Boolean, default: false },
@@ -34,12 +35,31 @@ const {
 /**
  * Mengambil frame lalu mengirimkannya ke parent untuk diproses OCR.
  */
+// Penanda agar auto-scan hanya berjalan sekali per sesi kamera.
+const autoScanned = ref(false)
+
 function handleCapture() {
   if (isDisabled.value || !isReady.value || props.isScanning) return
 
   const frame = captureFrame()
   if (frame) emit('capture', frame)
 }
+
+// Auto-scan: setelah kamera siap, ambil frame otomatis lalu proses OCR.
+watch(isReady, (ready) => {
+  if (!ready || autoScanned.value || props.isScanning || isDisabled.value) return
+  autoScanned.value = true
+  window.setTimeout(() => {
+    if (isReady.value && !props.isScanning && !isDisabled.value) {
+      handleCapture()
+    }
+  }, 1500)
+})
+
+// Reset penanda saat kamera dimatikan agar auto-scan bisa berulang.
+watch(isActive, (active) => {
+  if (!active) autoScanned.value = false
+})
 </script>
 
 <template>

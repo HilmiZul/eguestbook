@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.3 (24 November 2026)
+
+- Feat: kamera KTP memindai otomatis setelah kamera siap
+- Feat: foto KTP tidak disimpan atau dikirim ke spreadsheet (hanya foto selfie)
+
 ## v1.5.2 (04 November 2026)
 
 - Fix: menonaktifkan semua tombol dan input form saat proses kirim berlangsung

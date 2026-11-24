@@ -81,6 +81,7 @@ async function handleSend() {
       nama: result.value?.Nama ?? '',
       alamat: result.value?.Alamat ?? '',
       keperluan: keperluan.value ?? '',
+      // Hanya foto selfie yang dikirim; foto KTP tidak disimpan/dikirim.
       foto: selfiePhoto.value ? selfiePhoto.value.split(',')[1] ?? '' : '',
     }  
 

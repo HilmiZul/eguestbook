@@ -12,7 +12,7 @@ form selfie dan ringkasan hasil foto yang memakai data dari hasil pindai KTP.
 - Kamera KTP dan kamera selfie dapat aktif bersamaan.
 - Pemilih **Kamera** di tiap panel untuk memisahkan dua webcam.
 - Pratinjau kamera KTP memakai rasio fisik kartu KTP (85,6 : 54).
-- Pratinjau kamera aktif hanya setelah tombol **Buka Kamera** ditekan.
+- Kamera KTP memindai otomatis setelah kamera siap (tanpa tekan tombol).
 - Capture frame dan OCR memakai Tesseract.js dengan model bahasa Indonesia.
 - Ekstraksi NIK, Nama, dan Alamat dengan toleransi terhadap salah baca umum.
 - Form opsi **Keperluan** menyatu di bagian bawah panel Hasil.
