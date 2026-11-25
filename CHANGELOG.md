@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.5.5 (25 November 2026)
+
+- Fix: mengganti kalimat ambil foto ktp ke default jadi Pindai KTP.
+
 ## v1.5.4 (24 November 2026)
 
 - Feat: kustom library akurasi KTP (ktpAccuracy) dan pembersihan teks OCR
