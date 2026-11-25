@@ -29,3 +29,5 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+./src/config.js
