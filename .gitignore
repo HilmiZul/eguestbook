@@ -30,4 +30,4 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
-./src/config.js
+src/config.js
