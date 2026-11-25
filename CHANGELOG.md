@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v1.5.5 (25 November 2026)
+
+- Fix: mengganti kalimat ambil foto ktp ke default jadi Pindai KTP.
+
+## v1.5.4 (24 November 2026)
+
+- Feat: kustom library akurasi KTP (ktpAccuracy) dan pembersihan teks OCR
+- Feat: peningkatan akurasi NIK, Nama, dan Alamat (uppercase normalisasi)
+
+## v1.5.3 (24 November 2026)
+
+- Feat: kamera KTP memindai otomatis setelah kamera siap
+- Feat: foto KTP tidak disimpan atau dikirim ke spreadsheet (hanya foto selfie)
+
 ## v1.5.2 (04 November 2026)
 
 - Fix: menonaktifkan semua tombol dan input form saat proses kirim berlangsung

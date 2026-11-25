@@ -91,6 +91,9 @@ const ALAMAT_BOUNDARIES = [
  *
  * @returns {{ NIK: string, Nama: string, Alamat: string }}
  */
+// Fungsi pembantu diekspor agar dapat dipakai ulang (library akurasi KTP).
+export { normalizeNikCharacters, isPlausibleNik, cleanName, cleanAddress, cleanInlineValue }
+
 export function createEmptyKtpFields() {
   return { NIK: '', Nama: '', Alamat: '' }
 }
@@ -289,6 +292,8 @@ function cleanName(value) {
     .replace(/\s+/g, ' ')
     .replace(/^[\s.'-]+|[\s.'-]+$/g, '')
     .trim()
+    // Nama pada KTP dicetak huruf kapital, sehingga hasil OCR dinormalisasi.
+    .toUpperCase()
 }
 
 /**
@@ -342,6 +347,8 @@ function cleanAddress(value) {
     .replace(/^[\s:;,\-–—]+/, '')
     .replace(/[\s:;,\-–—]+$/, '')
     .trim()
+    // Alamat pada KTP dicetak huruf kapital.
+    .toUpperCase()
 }
 
 /**

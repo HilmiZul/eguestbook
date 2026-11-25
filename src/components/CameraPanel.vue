@@ -1,44 +1,47 @@
 <script setup>
-import { computed } from 'vue'
-import { useCamera } from '../composables/useCamera.js'
+import { computed } from "vue";
+import { useCamera } from "../composables/useCamera.js";
 
 const props = defineProps({
   isScanning: { type: Boolean, default: false },
   scanProgress: { type: Number, default: 0 },
-  scanStatus: { type: String, default: '' },
+  scanStatus: { type: String, default: "" },
+  // Status foto disimpan di parent agar pratinjau dapat menampilkannya.
+  hasPhoto: { type: Boolean, default: false },
+  photo: { type: String, default: "" },
   // Menonaktifkan seluruh kontrol saat proses kirim berlangsung.
   disabled: { type: Boolean, default: false },
   isSending: { type: Boolean, default: false },
-})
+});
 
-const isDisabled = computed(() => props.disabled || props.isSending)
+const isDisabled = computed(() => props.disabled || props.isSending);
 
-const emit = defineEmits(['capture'])
+const emit = defineEmits(["capture", "captured"]);
 
 // Seluruh logika kamera diisolasi di composable agar komponen ini fokus
 // pada tampilan dan interaksi pengguna.
-const {
-  videoRef,
-  isActive,
-  isStarting,
-  isReady,
-  isSupported,
-  error,
-  devices,
-  selectedDeviceId,
-  start,
-  stop,
-  captureFrame,
-} = useCamera({ facingMode: 'environment', preferredDeviceIndex: 0 })
+const { videoRef, isActive, isStarting, isReady, isSupported, error, devices, selectedDeviceId, start, stop, captureFrame } = useCamera({ facingMode: "environment", preferredDeviceIndex: 0 });
 
 /**
- * Mengambil frame lalu mengirimkannya ke parent untuk diproses OCR.
+ * Mengambil foto KTP, lalu menjalankan OCR secara otomatis.
  */
 function handleCapture() {
-  if (isDisabled.value || !isReady.value || props.isScanning) return
+  if (isDisabled.value || !isReady.value || props.isScanning) return;
 
-  const frame = captureFrame()
-  if (frame) emit('capture', frame)
+  const frame = captureFrame();
+  if (!frame) return;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = frame.width;
+  canvas.height = frame.height;
+
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  context.drawImage(frame, 0, 0);
+  emit("captured", canvas.toDataURL("image/jpeg", 0.9));
+  emit("capture", frame);
+  stop();
 }
 </script>
 
@@ -50,17 +53,9 @@ function handleCapture() {
       <div class="panel__tools">
         <label class="camera-picker">
           <span class="visually-hidden">Pilih kamera KTP</span>
-          <select
-            v-model="selectedDeviceId"
-            class="camera-picker__select"
-            :disabled="isActive || isStarting || isDisabled"
-          >
+          <select v-model="selectedDeviceId" class="camera-picker__select" :disabled="isActive || isStarting || isDisabled">
             <option value="">Kamera otomatis</option>
-            <option
-              v-for="(device, index) in devices"
-              :key="device.deviceId"
-              :value="device.deviceId"
-            >
+            <option v-for="(device, index) in devices" :key="device.deviceId" :value="device.deviceId">
               {{ device.label || `Kamera ${index + 1}` }}
             </option>
           </select>
@@ -70,18 +65,12 @@ function handleCapture() {
 
     <div class="camera-stage-frame">
       <div class="camera-stage" :class="{ 'camera-stage--active': isActive }">
-        <video
-          ref="videoRef"
-          class="camera-stage__video"
-          autoplay
-          muted
-          playsinline
-          aria-label="Pratinjau kamera untuk pindai KTP"
-        ></video>
+        <video ref="videoRef" class="camera-stage__video" autoplay muted playsinline aria-label="Pratinjau kamera untuk pindai KTP"></video>
 
         <!-- Tampilan awal sebelum kamera dinyalakan -->
         <div v-if="!isActive" class="camera-stage__empty">
-          <p class="camera-stage__empty-title">Kamera belum aktif</p>
+          <img v-if="hasPhoto && photo" :src="photo" alt="Foto KTP hasil capture" class="camera-stage__photo" />
+          <p v-else class="camera-stage__empty-title">Kamera belum aktif</p>
         </div>
 
         <!-- Panduan bingkai kartu; hanya tampil saat kamera aktif -->
@@ -89,15 +78,8 @@ function handleCapture() {
 
         <!-- Overlay progres saat OCR berjalan -->
         <div v-if="isScanning" class="camera-stage__scan" role="status" aria-live="polite">
-          <p class="camera-stage__scan-title">{{ scanStatus || 'Membaca KTP' }}</p>
-          <div
-            class="camera-stage__progress"
-            role="progressbar"
-            aria-label="Progres pembacaan KTP"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            :aria-valuenow="scanProgress"
-          >
+          <p class="camera-stage__scan-title">{{ scanStatus || "Membaca KTP" }}</p>
+          <div class="camera-stage__progress" role="progressbar" aria-label="Progres pembacaan KTP" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="scanProgress">
             <span class="camera-stage__progress-bar" :style="{ width: `${scanProgress}%` }"></span>
           </div>
           <p class="camera-stage__scan-meta">{{ scanProgress }}%</p>
@@ -107,41 +89,21 @@ function handleCapture() {
 
     <div class="camera-controls">
       <!-- Sebelum aktif: hanya tombol mulai -->
-      <button
-        v-if="!isActive"
-        type="button"
-        class="button camera-controls__primary"
-        :disabled="isStarting || !isSupported || isDisabled"
-        @click="start"
-      >
-        {{ isStarting ? 'Menyiapkan...' : 'Buka Kamera' }}
+      <button v-if="!isActive" type="button" class="button camera-controls__primary" :disabled="isStarting || !isSupported || isDisabled" @click="start">
+        {{ isStarting ? "Menyiapkan..." : "Buka Kamera" }}
       </button>
 
       <!-- Setelah aktif: capture sebagai aksi utama, stop sebagai aksi sekunder -->
       <template v-else>
-        <button
-          type="button"
-          class="button camera-controls__primary"
-          :disabled="!isReady || isScanning || isDisabled"
-          @click="handleCapture"
-        >
-          {{ isScanning ? 'Membaca...' : 'Pindai KTP' }}
+        <button type="button" class="button camera-controls__primary" :disabled="!isReady || isScanning || isDisabled" @click="handleCapture">
+          {{ isScanning ? "Membaca..." : "Pindai KTP" }}
         </button>
-        <button
-          type="button"
-          class="button camera-controls__secondary"
-          :disabled="isScanning || isDisabled"
-          @click="stop"
-        >
-          Hentikan
-        </button>
+        <button type="button" class="button camera-controls__secondary" :disabled="isScanning || isDisabled" @click="stop">Hentikan</button>
       </template>
     </div>
 
     <p v-if="error" class="feedback feedback--error" role="alert">{{ error }}</p>
-    <p v-else-if="!isSupported" class="feedback feedback--error" role="alert">
-      Browser ini tidak mendukung akses kamera.
-    </p>
+    <p v-else-if="!isSupported" class="feedback feedback--error" role="alert">Browser ini tidak mendukung akses kamera.</p>
   </section>
 </template>
 
@@ -207,6 +169,13 @@ function handleCapture() {
   margin: 0;
   font-size: 0.8125rem;
   font-weight: 600;
+}
+
+.camera-stage__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* Bingkai panduan mengikuti proporsi kartu KTP */

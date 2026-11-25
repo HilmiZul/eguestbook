@@ -151,104 +151,119 @@
   - saya membuat kolom di spreadsheets yaitu: tanggal, nik, nama, alamat, keperluan, foto
 
 ## Bug 1:
-- App.vue:67  POST https://script.google.com/macros/s/AKfycbyzLhnSG5Mu664QclnFlUo1pudiIlFi0_mQ1pZPeK8AhzzEqh_i7OVAj9qzFLbeK8nQ/exec net::ERR_ABORTED 401 (Unauthorized)
-- saat kirim terjadi status code 401 
+
+- App.vue:67 POST https://script.google.com/macros/s/AKfycbyzLhnSG5Mu664QclnFlUo1pudiIlFi0_mQ1pZPeK8AhzzEqh_i7OVAj9qzFLbeK8nQ/exec net::ERR_ABORTED 401 (Unauthorized)
+- saat kirim terjadi status code 401
 
 ## UI: feedback berhasil terkirim
+
 uji sampai lolos baru laporkan
-- tampilkan feedback berhasil dalam bentuk modal 
+
+- tampilkan feedback berhasil dalam bentuk modal
 - pesan dalam modal: Berhasil Tersimpan!
 - tombol berwarna hitam dengan label tutup, menutup modal
-- Desain: 
-  - ukuran modal medium 
-  - letak tempat ditengah 
-  - border hitam sama seperti panel 
+- Desain:
+  - ukuran modal medium
+  - letak tempat ditengah
+  - border hitam sama seperti panel
 
 ## Bug 2:
-- ResultPanel.vue:18 [Vue warn]: Unhandled error during execution of component event handler 
-  at <ResultPanel result= 
-{NIK: '22222', Nama: 'ywdqy', Alamat: 'hxbqhb'}
- is-scanning=false error=""  ... > 
+
+- ResultPanel.vue:18 [Vue warn]: Unhandled error during execution of component event handler
+  at <ResultPanel result=
+  {NIK: '22222', Nama: 'ywdqy', Alamat: 'hxbqhb'}
+  is-scanning=false error="" ... >
   at <App>
 
 App.vue:56 Uncaught (in promise) ReferenceError: sendStatus is not defined
-    at handleSend (App.vue:56:3)
-    at handleSubmit (ResultPanel.vue:18:3)
+at handleSend (App.vue:56:3)
+at handleSubmit (ResultPanel.vue:18:3)
+
 - investigasi dan kerjakan sampai lolos test lalu laporkan penyebab dan apa yang sudah di perbaiki
 
-## Perbaikan: UI feedback berhasil terkirim 
-- hapus tombol tutup, ubah dengan progres bar 
-- modal otomatis diaspear setelah countdown 5 detik 
-test sampai lulus 
-commit dan update changelog kalau sudah lulus test
+## Perbaikan: UI feedback berhasil terkirim
 
-## Perbaikan 2: progres bar feedback 
-- buatkan animasi progres bar feedback modal berhasil terkirim 
-- test sampai lulus 
+- hapus tombol tutup, ubah dengan progres bar
+- modal otomatis diaspear setelah countdown 5 detik
+  test sampai lulus
+  commit dan update changelog kalau sudah lulus test
+
+## Perbaikan 2: progres bar feedback
+
+- buatkan animasi progres bar feedback modal berhasil terkirim
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
 ## menambahkan: UI feedback jika gagal
+
 - gagal kirim atau koneksi tidak stabil tampilkan modal dengan " gagal terkirim, periksa jaringan dan kirim ulang"
-pakai tombol siap 
-- test sampai lulus 
+  pakai tombol siap
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
 ## Perubahan layout 7
+
 - posisi hasil foto itu pindahkan di sebelah kiri
-- posisi input: nik, nama, alamat pindahkan di sebelah kanan 1 baris sejajar 
-- form keperluan pisahkan dengan form hasil foto dan scan ktp 
-- form hasil dan form keperluan sesuaikan tinggi dan lebar nya seperti pindah ktp dan foto selfie 
-- test sampai lulus 
+- posisi input: nik, nama, alamat pindahkan di sebelah kanan 1 baris sejajar
+- form keperluan pisahkan dengan form hasil foto dan scan ktp
+- form hasil dan form keperluan sesuaikan tinggi dan lebar nya seperti pindah ktp dan foto selfie
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
-## Perubahan layout 8 
-- ganti layout form posisikan seperti layouts3.png 
+## Perubahan layout 8
+
+- ganti layout form posisikan seperti layouts3.png
 - Pisahkan form keperluan tidak menyatu dalam 1 panel
-- pisah form hasil dengan form keperluan 
+- pisah form hasil dengan form keperluan
 - posisi form hasil di kanan atas sejajarkan dengan scan ktp
 - posisi form keperluan di kanan bawah sejajarkan dengan foto selfie
-- inputan dari nik sampai alamat itu di urutkan samakan dengan layouts3.png 
-- Fitur: Opsi Keperluan 2 
-  - opsi 1: menjemput siswa 
-  - opsi 2: kegiatan workshop 
-  - opsi 3: Mengambil ijazah 
+- inputan dari nik sampai alamat itu di urutkan samakan dengan layouts3.png
+- Fitur: Opsi Keperluan 2
+  - opsi 1: menjemput siswa
+  - opsi 2: kegiatan workshop
+  - opsi 3: Mengambil ijazah
   - opsi 4: Rapat orang tua
-- test sampai lulus 
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
 ## revisi 8
-- inputan nik sampai alamat sesuaikan yang ada di file layouts3.png 
-- lalu tombol kirim disatukan di panel keperluan di simpan di bawahnya 
-- ukuran tombol kirim di panel keperluan samakan panjang dan lebarnya seperti tombol button scan 
+
+- inputan nik sampai alamat sesuaikan yang ada di file layouts3.png
+- lalu tombol kirim disatukan di panel keperluan di simpan di bawahnya
+- ukuran tombol kirim di panel keperluan samakan panjang dan lebarnya seperti tombol button scan
 - layout nya harus sama persis seperti di file layouts3.png
-- test sampai lulus 
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
-## revisi 9 
+## revisi 9
+
 - di panel hasil kolom nik sampai alamat lebarkan dan posisi atas tengah dan bawah
-- di panel keperluan opsi 3 dan 4 jangan kepotong oleh panel, sesuaikan agar tidak terpotong 
-- tombol kirim gabungkan ke dalam panel keperluan 
+- di panel keperluan opsi 3 dan 4 jangan kepotong oleh panel, sesuaikan agar tidak terpotong
+- tombol kirim gabungkan ke dalam panel keperluan
 - ubah itu samakan dengan form yang ada di file layouts3.png
-- test sampai lulus 
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
-## revisi 10 
+## revisi 10
+
 - tombol button kirim di panel keperluan samakan lebar dan tingginya seperti di tombol button scan ktp
 - dan opsi keperluan opsi opsi itu jangan ada scrolll
-- test sampai lulus 
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
-## revisi 11 
-- tombol button di panel keperluan masih di sisi tombol kiri, harusnya di lebarkan tombol button kirim di panel keperluan 
+## revisi 11
+
+- tombol button di panel keperluan masih di sisi tombol kiri, harusnya di lebarkan tombol button kirim di panel keperluan
 - responsif kan ketika layar di ukuran tablet dan rapih
-- tombol button di panel keperluan samakan yang di tombol button yang di panel scan ktp 
-- test sampai lulus 
+- tombol button di panel keperluan samakan yang di tombol button yang di panel scan ktp
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
-## revisi 12: tombol kirim di panel keperluan 
-- check di file keperluan.png dia tombolnya masih di kiri ubah width nya jadi lebarkan 
-- tombol button kirim masih di posisi di kiri, saya ingin posisinya di lebarkan 
-- test sampai lulus 
+## revisi 12: tombol kirim di panel keperluan
+
+- check di file keperluan.png dia tombolnya masih di kiri ubah width nya jadi lebarkan
+- tombol button kirim masih di posisi di kiri, saya ingin posisinya di lebarkan
+- test sampai lulus
 - commit dan update changelog kalau sudah lulus test
 
 ## Update 1: Validasi setelah kirim berhasil
@@ -262,4 +277,39 @@ pakai tombol siap
 - Disable semua tombol dan form input tanpa terkecuali
 - Aktifkan kembali saat proses kirim berhasil/gagal
 - test sampai passed
+- commit dan update changelog kalau test passed
+
+## Update fitur kamera
+
+- update fitur kamera ktp jadi di foto dulu lalu di scan otomatis lalu di baca sama ocr nya
+- untuk hasil foto ktp jangan di simpan di spreedsheet nya
+- untuk scaning nya maksimalkan atau buat libary sendiri untuk memudahkan scan dan deteksi ktp
+- test sampai passed
+- commit dan update changelog kalau test passed
+
+## Fitur: kamera ktp
+
+- untuk pindai ktp itu ganti dengan ambil gambar foto ktp tersebut lalu di scaning otomatis ketika gambar tersebut sudah di ambil gambar/foto
+- untuk hasil foto ktp jangan di simpan di spreedsheet nya
+- untuk scaning nya maksimalkan atau buat libary sendiri untuk memudahkan scan dan deteksi ktp
+- test sampai passed
+- commit dan update changelog kalau test passed
+
+## Fitur: kamera ktp 1
+
+- rombak scan nya jadi ambil foto mirip kayak foto selfie lalu ketika sudah ambil foto tersebut udah ada fotonya lalu scan otomatis
+- jika ada yang bingung tanyakan saja dan rekomendasikan
+- test sampai passed dan check apakah sudah sesuai TASKS
+- commit dan update changelog kalau test passed
+
+## Update 3
+
+- untuk hasil scaning ktp nya lebih di akurat kan lagi terutama nik nama dan alamatnya saja hanya 3 saja yang di lebihkan akuratnya
+- setelah data di kirim riset yang hasil foto di hasil kamera sama seperti foto selfie ketika sudah di kirim terus ada feedback berhasil di kirim maka nge riset semuanya
+- test sampai passed dan check apakah sudah sesuai TASKS
+- commit dan update changelog kalau test passed
+
+## Update 4 
+- lebih di akuratkan lagi untuk scaning ktp terutama nik nama dan alamatnya dan tambahkan libarry sendiri untuk meningkatkan akuratnya lagi 
+- test sampai passed dan check apakah sudah sesuai TASKS
 - commit dan update changelog kalau test passed

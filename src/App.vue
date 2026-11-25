@@ -26,6 +26,9 @@ const keperluan = ref('')
 // Foto selfie disimpan sebagai data URL agar bisa ditampilkan di panel hasil foto.
 const selfiePhoto = ref('')
 
+// Foto KTP hasil capture (tidak disimpan/dikirim ke spreadsheet).
+const ktpPhoto = ref('')
+
 // Status pengiriman data ke spreadsheet.
 const isSending = ref(false)
 const sendError = ref('')
@@ -48,6 +51,14 @@ function closeErrorModal() {
  */
 function handleSelfieCapture(photo) {
   selfiePhoto.value = photo
+}
+
+/**
+ * Menyimpan foto KTP hasil capture (hanya tampilan, tidak dikirim).
+ * @param {string} photo
+ */
+function handleKtpCapture(photo) {
+  ktpPhoto.value = photo
 }
 
 /**
@@ -81,6 +92,7 @@ async function handleSend() {
       nama: result.value?.Nama ?? '',
       alamat: result.value?.Alamat ?? '',
       keperluan: keperluan.value ?? '',
+      // Hanya foto selfie yang dikirim; foto KTP tidak disimpan/dikirim.
       foto: selfiePhoto.value ? selfiePhoto.value.split(',')[1] ?? '' : '',
     }  
 
@@ -93,10 +105,13 @@ async function handleSend() {
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     })
-    // Validasi setelah kirim berhasil: kosongkan form result NIK, Nama, dan Alamat.
+    // Validasi setelah kirim berhasil: kosongkan form result, foto, dan keperluan.
     result.value = createEmptyKtpFields()
     keperluan.value = ''
     selfiePhoto.value = ''
+    ktpPhoto.value = ''
+    notice.value = ''
+    error.value = ''
 
 
 
@@ -154,7 +169,10 @@ defineExpose({
           :scan-status="statusMessage"
           :disabled="isSending"
           :is-sending="isSending"
+          :has-photo="Boolean(ktpPhoto)"
+          :photo="ktpPhoto"
           @capture="handleCapture"
+          @captured="handleKtpCapture"
         />
 
         <SelfiePanel

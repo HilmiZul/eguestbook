@@ -17,6 +17,7 @@ import {
   parseKtpText,
 } from '../services/ktp/parseKtp.js'
 import { preprocessCapture } from '../services/ktp/preprocessCapture.js'
+import { refineOcrText } from '../services/ktp/ktpAccuracy.js'
 
 // Status bawaan Tesseract diterjemahkan agar pesan di UI konsisten.
 const OCR_STATUS_LABELS = {
@@ -132,7 +133,7 @@ export function useKtpScan() {
 
       // Pass pertama: gambar grayscale dengan kontras yang sudah diperbaiki.
       const primaryResult = await runRecognition(preparedFrame, PSM.SINGLE_BLOCK)
-      let fields = parseKtpText(primaryResult.text)
+      let fields = parseKtpText(refineOcrText(primaryResult.text))
 
       // Pass kedua hanya dijalankan jika masih ada field yang kosong.
       if (countKtpFields(fields) < 3) {
@@ -140,7 +141,7 @@ export function useKtpScan() {
         progress.value = 0
 
         const fallbackResult = await runRecognition(frame, PSM.SPARSE_TEXT)
-        fields = mergeKtpFields(fields, parseKtpText(fallbackResult.text))
+        fields = mergeKtpFields(fields, parseKtpText(refineOcrText(fallbackResult.text)))
       }
 
       result.value = fields
